@@ -1,0 +1,9 @@
+from building import *
+import os
+
+cwd =GetCurrentDir()
+CPPPATH =[cwd]
+src = ['hello.c']
+group = DefineGroup('Hello_Test', src, depend = [''],CPPPATH = CPPPATH)
+
+Return('group')
