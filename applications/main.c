@@ -9,41 +9,41 @@
  * 2023-12-03     Meco Man     support nano version
  */
 
-#include <board.h>
-#include <rtthread.h>
-#include <drv_gpio.h>
-#ifndef RT_USING_NANO
-#include <rtdevice.h>
-#endif /* RT_USING_NANO */
-
-#define GPIO_LED_B    GET_PIN(F, 11)
-#define GPIO_LED_R    GET_PIN(F, 12)
-int main(void)
-{
-    rt_pin_mode(GPIO_LED_R, PIN_MODE_OUTPUT);
-
-    while (1)
-    {
-        rt_pin_write(GPIO_LED_R, PIN_HIGH);
-        rt_thread_mdelay(500);
-        rt_pin_write(GPIO_LED_R, PIN_LOW);
-        rt_thread_mdelay(500);
-    }
-}
-
+// #include <board.h>
 // #include <rtthread.h>
-// #include "hello.h"
+// #include <drv_gpio.h>
+// #ifndef RT_USING_NANO
+// #include <rtdevice.h>
+// #endif /* RT_USING_NANO */
 
-// int main(void) 
+// #define GPIO_LED_B    GET_PIN(F, 11)
+// #define GPIO_LED_R    GET_PIN(F, 12)
+// int main(void)
 // {
-//     while(1)
+//     rt_pin_mode(GPIO_LED_R, PIN_MODE_OUTPUT);
+
+//     while (1)
 //     {
-//         Print_Hello_World();
+//         rt_pin_write(GPIO_LED_R, PIN_HIGH);
+//         rt_thread_mdelay(500);
+//         rt_pin_write(GPIO_LED_R, PIN_LOW);
 //         rt_thread_mdelay(500);
 //     }
-
-//     return 0;
 // }
+
+#include <rtthread.h>
+#include "hello.h"
+
+int main(void) 
+{
+    while(1)
+    {
+        Print_Hello_World();
+        rt_thread_mdelay(500);
+    }
+
+    return 0;
+}
 
 /*
  * 程序清单：创建、初始化/脱离线程
