@@ -10,21 +10,25 @@ for more details.
 [en.stsw-link007-v3-13-4.zip](./en.stsw-link007-v3-13-4.zip)
 [en.stsw-link009.zip](./en.stsw-link009.zip)
 
-## git clone
+## git 
 ``` bash
 git clone https://github.com/*.git
-## git
-``` bash
+
 git init
 git add .
 git commit -m "first commit"
 
 # 给仓库地址设置一个别名(将本地项目与GitHub上的关联)
 git remote add origin https://github.com/*.git 
+
 # 查看配置的仓库
 git remote -v
+
 # 删除别名
 git remote remove origin
+
+# （只需要push一次）给origin 增加一个可以push的地址
+git remote set-url --add origin git@github.com:*.git
 
 git push -u origin master
 ```
