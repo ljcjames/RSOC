@@ -79,23 +79,22 @@ static void key_name_entry(void *parameter)
     rt_uint32_t count=0;
     while (1)
     {
-        
         if(rt_pin_read(PIN_KEY0) == PIN_LOW)
         {
             rt_thread_mdelay(100);
             if(rt_pin_read(PIN_KEY0) == PIN_LOW)
             {
-                rt_kprintf("key0 is pressed (%d)\r", count++);
-                    rt_sem_release(dynamic_sem);
+                rt_kprintf("key0 is pressed (%d) ", count++);
+                    // rt_sem_release(dynamic_sem);
             }
             else
             {
-                rt_pin_write(GPIO_LED_R, PIN_LOW);
+                rt_sem_release(dynamic_sem);
             }
         }
         else
         {
-            rt_pin_write(GPIO_LED_R, PIN_LOW);
+            rt_sem_release(dynamic_sem);
         }
         rt_thread_mdelay(10);
     }
@@ -108,15 +107,11 @@ static void led_name_entry(void *parameter)
     rt_uint32_t result=0;
     while (1)
     {
+        rt_pin_write(GPIO_LED_R, PIN_HIGH);
         result = rt_sem_take(dynamic_sem, RT_WAITING_FOREVER);
         if (result == RT_EOK)
-        {
-            rt_kprintf("LED HIGH\n");
-            rt_pin_write(GPIO_LED_R, PIN_HIGH);
-        }
-        else 
-        {
-            rt_kprintf("LED LOW");
+        {            
+            // rt_kprintf("LED LOW\n");
             rt_pin_write(GPIO_LED_R, PIN_LOW);
         }
         
