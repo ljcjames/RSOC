@@ -169,5 +169,19 @@ rt_err_t rt_mb_init(rt_mailbox_t mb, const char* name, rt_uint32_t size, rt_uint
 ![alt text](image-12.png)
 1消息 多线程？
 FIFO 对于谁
+launch
+停止？
 。。。
 [一个好用的串口工具类似mobaxterm](https://wterm.wkjay.com/)
+
+dist 的好处
+加入sample
+配置完任何软件包都要在env中
+``` c
+pkgs --update
+```
+
+## 示例点灯
+### 灭了怎么点都不亮
+在key线程循环中每次点亮？
+因为按键按灭就没再点亮

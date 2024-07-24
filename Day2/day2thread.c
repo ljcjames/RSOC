@@ -33,7 +33,7 @@ static void thread2_entry(void *parameter)
     rt_kprintf("thread2 is exiting\n");
 }
 
-int thread(void)
+int tgame(void)
 {
     tid1=rt_thread_create("thread1",
     thread1_entry,
