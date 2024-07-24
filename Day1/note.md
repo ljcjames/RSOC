@@ -1,4 +1,18 @@
 # RSOC Day1
+## 运行报错
+> OpenOCD: GDB Server Quit Unexpectedly. See gdb-server output in TERMINAL tab
+for more details.
+
+![error](./error.png)
+大概是没能连接设备，尝试以下方法
+1. 插好线，摁开关
+2. 没装驱动，装驱动
+[en.stsw-link007-v3-13-4.zip](./en.stsw-link007-v3-13-4.zip)
+[en.stsw-link009.zip](./en.stsw-link009.zip)
+
+## git clone
+``` bash
+git clone https://github.com/*.git
 ## git
 ``` bash
 git init
