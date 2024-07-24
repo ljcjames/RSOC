@@ -1,8 +1,8 @@
-# Day 3 IPC
+# Day 3 IPC机制
 ![alt text](image-3.png)
 ![alt text](image.png)
 1. √
-2. ？
+2. 互斥量
 3. 
 ## 临界区
 only one can use the resource at a time
@@ -11,6 +11,7 @@ only one can use the resource at a time
 
 ## 阻塞非阻塞
 Blocking/Non-blocking
+线程/资源都有
 ![alt text](image-1.png)
 阻塞: 等待,一个线程
 ？？？
@@ -24,7 +25,7 @@ Blocking/Non-blocking
 一个线程在等待另一个线程,另一个线程在等待另一个线程 -->
 
 ## 死锁
-两个线程互相等待
+两个线程互相等待，需要对方的资源
 ![alt text](image-2.png)
 <!-- ## 互斥
 两个线程不能同时使用资源 -->
@@ -70,3 +71,92 @@ rt_err_t rt_sem_trytake(rt_sem_t sem);
 ``` c
 rt_err_t rt_sem_release(rt_sem_t sem);
 ```
+## 互斥量
+约等于仅有的一把钥匙
+保护临界资源
+多次获取多次释放？？？
+![alt text](image-7.png)
+### 优先级反转
+高优先级被低优先级阻塞
+实时：高优先级先执行
+运行需要资源
+资源有信号量
+临界资源有互斥量
+占用资源要先完成才能释放
+![alt text](image-8.png)
+把A的优先级临时赋C
+![alt text](image-9.png)
+### 创建和删除???互斥量
+``` c
+rt_mutex_t rt_mutex_create (const char* name, rt_uint8_t flag);
+rt_err_t rt_mutex_delete (rt_mutex_t mutex);
+
+```
+无论选择 RT_IPC_FLAG_PRIO 还是 RT_IPC_FLAG_FIFO，内核均按照 RT_IPC_FLAG_PRIO 处理
+
+### 初始化和脱离互斥量
+``` c
+rt_err_t rt_mutex_init (rt_mutex_t mutex, const char* name, rt_uint8_t flag);
+rt_err_t rt_mutex_detach (rt_mutex_t mutex);
+```
+### 获取互斥量
++1???
+``` c
+rt_err_t rt_mutex_take (rt_mutex_t mutex, rt_int32_t time);
+```
+？？？
+### 无等待获取互斥量
+``` c
+rt_err_t rt_mutex_trytake(rt_mutex_t mutex);
+```
+### 释放互斥量
+``` c
+rt_err_t rt_mutex_release (rt_mutex_t mutex);
+```
+
+## 事件集
+？？？一堆事件在32bit中，在线程中与，或判断执行
+![alt text](image-10.png)
+### 创建事件集
+``` c
+rt_event_t rt_event_create(const char* name, rt_uint8_t flag);
+```
+### 删除事件集
+？？？唤醒
+create用这个
+``` c
+rt_err_t rt_event_delete(rt_event_t event);
+```
+### 初始化事件集
+``` c
+rt_err_t rt_event_init(rt_event_t event, const char* name, rt_uint8_t flag);
+```
+### 脱离事件集
+create 不能用
+``` c
+rt_err_t rt_event_detach(rt_event_t event);
+```
+### ……
+jssjian
+
+## 消息邮箱
+？？？
+4个字节（32位）恰好可以传递指针
+![alt text](image-11.png)
+### 创建消息邮箱
+``` c
+rt_mailbox_t rt_mb_create(const char* name, rt_uint32_t size, rt_uint8_t flag);
+```
+### 删除消息邮箱
+``` c
+rt_err_t rt_mb_delete(rt_mailbox_t mb);
+```
+### 初始化消息邮箱
+``` c
+rt_err_t rt_mb_init(rt_mailbox_t mb, const char* name, rt_uint32_t size, rt_uint8_t flag);
+```
+### 脱离消息邮箱
+
+### 等待
+不能在中断中使用？？？
+### ...
