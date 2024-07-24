@@ -30,6 +30,7 @@ Blocking/Non-blocking
 <!-- ## 互斥
 两个线程不能同时使用资源 -->
 ## 信号量
+约等于停车场剩余车位
 用于线程间同步、互斥
 - 二值信号量 约等于bool 获得1，不得0
 ![alt text](image-4.png)
@@ -39,7 +40,7 @@ Blocking/Non-blocking
 - 裸机 根据全局变量flag 反应（错误、破坏、不能挂起一直停在这……？？？）
 - 用系统的api，不要flag
 - 三种反应：一直等，等一会，不等
-## api
+api
 ### √ 创建信号量（动态）节省资源，动态分配，可能内存破坏
 ？？？
 注意区别？
@@ -139,24 +140,34 @@ rt_err_t rt_event_detach(rt_event_t event);
 ### ……
 jssjian
 
-## 消息邮箱
+## （消息）邮箱
 ？？？
 4个字节（32位）恰好可以传递指针
 ![alt text](image-11.png)
-### 创建消息邮箱
+### 创建邮箱
 ``` c
 rt_mailbox_t rt_mb_create(const char* name, rt_uint32_t size, rt_uint8_t flag);
 ```
-### 删除消息邮箱
+### 删除邮箱
 ``` c
 rt_err_t rt_mb_delete(rt_mailbox_t mb);
 ```
-### 初始化消息邮箱
+### 初始化邮箱
 ``` c
 rt_err_t rt_mb_init(rt_mailbox_t mb, const char* name, rt_uint32_t size, rt_uint8_t flag);
 ```
-### 脱离消息邮箱
+### 脱离邮箱
 
 ### 等待
 不能在中断中使用？？？
 ### ...
+
+## 消息队列
+![alt text](image-11.png)
+### 异步通信
+1.vs2.
+![alt text](image-12.png)
+1消息 多线程？
+FIFO 对于谁
+。。。
+[一个好用的串口工具类似mobaxterm](https://wterm.wkjay.com/)
