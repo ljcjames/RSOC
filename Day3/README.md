@@ -1,4 +1,5 @@
 # Day 3 IPC机制
+同步是指按预定的先后次序进行运行
 ![alt text](image-3.png)
 ![alt text](image.png)
 1. √
@@ -11,18 +12,15 @@ only one can use the resource at a time
 
 ## 阻塞非阻塞
 Blocking/Non-blocking
-线程/资源都有
-![alt text](image-1.png)
-阻塞: 等待,一个线程
-？？？
-非阻塞: 不等待
+线程阻塞：资源被其它线程占用
+阻塞式线程：只能执行当前任务并等待其完成
+非阻塞式线程：执行当前任务，还可以做其它事情，完成时收到异步通知
 
 ## 挂起
-？？？
-<!-- ## 同步
-一个线程在等待另一个线程
-## 异步
-一个线程在等待另一个线程,另一个线程在等待另一个线程 -->
+暂时搁置
+> 当信号量实例数目为零时，再申请该信号量的线程就会被挂起在该信号量的等待队列上，等待可用的信号量实例（资源）。
+
+把寄存器，线程栈里面的东西保存下来
 
 ## 死锁
 两个线程互相等待，需要对方的资源
@@ -32,37 +30,49 @@ Blocking/Non-blocking
 ## 信号量
 约等于停车场剩余车位
 用于线程间同步、互斥
-- 二值信号量 约等于bool 获得1，不得0
-![alt text](image-4.png)
-- 计数信号量 初始为期待的值？？？
-- ![alt text](image-5.png)
-？？？
-- 裸机 根据全局变量flag 反应（错误、破坏、不能挂起一直停在这……？？？）
+- 有线程释放，信号量+1；有线程获得，信号量-1
+- 二值信号量 约等于bool 初始为0，解决同步问题
+- 计数信号量 初始为期待的值（允许同时访问同一资源的任务个数）,用于解决资源计数问题
+- 裸机 根据全局变量flag 反应（不知道谁修改→错误、逻辑混乱、破坏、不能挂起一直停在这……）
 - 用系统的api，不要flag
 - 三种反应：一直等，等一会，不等
-api
+
+信号量控制块由结构体 struct rt_semaphore 表示。另外一种 C 表达方式 rt_sem_t
+``` c
+static rt_sem_t dynamic_sem = RT_NULL;
+```
+**api**
 ### √ 创建信号量（动态）节省资源，动态分配，可能内存破坏
-？？？
+从对象管理器中分配一个semaphore对象，……
+当信号量不可用时的线程排队方式flag:RT_IPC_FLAG_FIFO先进先出/RT_IPC_FLAG_PRIO优先级
 注意区别？
 ``` c
 rt_sem_t rt_sem_create(const char* name, rt_uint32_t value, rt_uint8_t flag);
-// flag:RT_IPC_FLAG_FIFO先进先出/RT_IPC_FLAG_PRIO优先级
 ```
-### √ 删除信号量
-？？？
+### √ 删除信号量（动态）
+（适用于动态创建的信号量）
+删除信号量以释放系统资源。如果删除该信号量时，有线程正在等待该信号量，那么删除操作会先唤醒等待在该信号量上的线程（等待线程的返回值是 - RT_ERROR），然后再释放信号量的内存资源
 ``` c
 rt_err_t rt_sem_delete(rt_sem_t sem);
 ```
-### 初始化信号量(静态)还在内存，别人也用不了
+### 初始化信号量(静态)还在内存，不用了别人也用不了
 ``` c
 rt_err_t rt_sem_init(rt_sem_t sem, const char* name, rt_uint32_t value, rt_uint8_t flag);
 ```
 ### 脱离信号量
-从内核对象管理器中脱离
-
+从内核对象管理器中脱离 ,原来挂起在信号量上的等待线程将获得 - RT_ERROR 的返回值
+``` c
+rt_err_t rt_sem_detach(rt_sem_t sem);
+```
 ### 获取信号量
-time 单位tick
-？？？
+time 单位tick/RT_WAITING_FOREVER
+
+RT_EOK:成功获得信号量
+-RT_ETIMEOUT:超时依然未获得信号量
+-RT_ERROR:其他错误
+``` c
+rt_err_t rt_sem_take(rt_sem_t sem, rt_int32_t time);
+```
 ![alt text](image-6.png)
 ### 无等待获取信号量
 ``` c

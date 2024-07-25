@@ -727,6 +727,10 @@ endmenu
 
 menu "Board extended module Drivers"
 
+    config BSP_USING_TEST
+        bool "Enable test driver"
+        default n
+        
     menuconfig BSP_USING_AT_ESP8266
         bool "Enable ESP8266(AT Command, COM3)"
         default n

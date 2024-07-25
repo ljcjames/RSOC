@@ -122,6 +122,9 @@ if GetDepend(['BSP_USING_PULSE_ENCODER']):
 if GetDepend(['BSP_USING_USBH']):
     src += ['drv_usbh.c']
 
+if GetDepend(['BSP_USING_TEST']):
+    src += ['drv_test.c']
+
 path += [os.path.join(cwd, 'config')]
 
 if GetDepend('BSP_USING_ON_CHIP_FLASH'):
