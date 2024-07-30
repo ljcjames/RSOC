@@ -55,7 +55,8 @@ static int onboard_fal_mount(void)
     extern struct rt_device *fal_blk_device_create(const char *parition_name);
     fal_init();
     /* 在 spi flash 中名为 "filesystem" 的分区上创建一个块设备 */
-    struct rt_device *flash_dev = fal_blk_device_create("font");
+    struct rt_device *flash_dev = fal_blk_device_create(FS_PARTITION_NAME);
+    fal_blk_device_create("font");
     if (flash_dev == NULL)
     {
         LOG_E("Can't create a block device on '%s' partition.", FS_PARTITION_NAME);
