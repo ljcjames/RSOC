@@ -29,7 +29,6 @@
 #define RT_DEBUGING_ASSERT
 #define RT_DEBUGING_COLOR
 #define RT_DEBUGING_CONTEXT
-#define RT_DEBUGING_AUTO_INIT
 #define RT_USING_OVERFLOW_CHECK
 
 /* Inter-Thread communication */
