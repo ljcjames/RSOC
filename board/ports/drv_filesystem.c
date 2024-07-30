@@ -72,8 +72,16 @@ static int onboard_fal_mount(void)
     }
     else
     {
-        LOG_E("Failed to initialize filesystem!");
-        LOG_D("You should create a filesystem on the block device first!");
+        dfs_mkfs("elm", flash_dev->parent.name);
+        if (dfs_mount(flash_dev->parent.name, "/fal", "elm", 0, 0) == 0)
+        {
+            LOG_I("Filesystem initialized!");
+        }
+        else
+        {
+            LOG_E("Failed to initialize filesystem!");
+            LOG_D("You should create a filesystem on the block device first!");
+        }        
     }
 
     return RT_EOK;
