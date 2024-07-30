@@ -102,7 +102,7 @@ void make_file(char *String)
     int fd;
 
     //用只写方式打开文件,如果没有该文件,则创建一个文件
-    fd = open("/fal/test/Data.txt", O_APPEND | O_CREAT);
+    fd = open("/fal/test/Data.txt", O_WRONLY | O_CREAT);
 
     //如果打开成功
     if (fd >= 0)
@@ -131,7 +131,7 @@ void tmp_payload(void)
         sprintf(tmp, "Temp：%f ; Humi：%f ; Count： %d", Temp, Humi,++cnt);
         make_file(tmp);
         sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f}}", Temp, Humi);
-        rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
+        // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
         return;
 }
 static int example_publish(void *handle)
@@ -146,7 +146,7 @@ static int example_publish(void *handle)
     int             topic_len = 0;
     char           *payload = tmp;
     // strcpy(payload,tmp_payload());
-    rt_kprintf("payload:%s\n",payload);
+    // rt_kprintf("payload:%s\n",payload);
     topic_len = strlen(fmt) + strlen(DEMO_PRODUCT_KEY) + strlen(DEMO_DEVICE_NAME) + 1;
     topic = HAL_Malloc(topic_len);
     if (topic == NULL) {
