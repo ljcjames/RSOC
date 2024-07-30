@@ -22,8 +22,8 @@ uint64_t HAL_UptimeMs(void);
 int HAL_Snprintf(char *str, const int len, const char *fmt, ...);
 
 //定义接受文件内容的缓冲区
-char buffer[100] = {};
-char tmp[256];
+char buffer[1026] = {};
+char tmp[1026];
 
 #define GPIO_LED_B GET_PIN(F,11)
 #define GPIO_LED_R GET_PIN(F,12)
@@ -105,10 +105,9 @@ void make_file()
 {
     //文件描述符
     int fd;
-    // String = "Hello, RT-Thread.Welcom to RSOC!\n temp: 123, humi: 789";
-    
+
     //用只写方式打开文件,如果没有该文件,则创建一个文件
-    fd = open("/fal/test/Data.txt", O_WRONLY | O_CREAT | O_APPEND,0); //和原来相比，只是把O_TRUNC参数更改为O_APPEND，即更改为打开后，如果再进行写入，将从文件的末尾位置开始写。
+    fd = open("/fal/test/Data.txt", O_WRONLY | O_CREAT | O_APPEND); //和原来相比，只是把O_TRUNC参数更改为O_APPEND，即更改为打开后，如果再进行写入，将从文件的末尾位置开始写。
     // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,String);
     //如果打开成功
     if (fd >= 0)
@@ -126,30 +125,7 @@ void make_file()
         rt_kprintf("File Open Fail.\n");
     }
 
-    //用只读方式打开文件
-    fd = open("/fal/test/Data.txt", O_RDONLY);
-
-    if (fd>= 0)
-    {
-        //读取文件内容
-        rt_uint32_t size = read(fd, buffer, sizeof(buffer));
     
-        if (size < 0)
-        {
-            rt_kprintf("Read File Fail.\n");
-            return ;
-        }
-
-        //输出文件内容
-        rt_kprintf("Read from file test.txt : %s \n", buffer);
-
-        //关闭文件
-        close(fd);
-    }
-    else
-    {
-        rt_kprintf("File Open Fail.\n");
-    }
     return;
 }
 int cnt = 0;
@@ -159,9 +135,9 @@ void tmp_payload(void)
         Humi = aht10_read_humidity(Dev);
         Temp = aht10_read_temperature(Dev);
         memset(tmp, 0, sizeof(tmp));
-        sprintf(tmp, "Temp: %f;Humi: %f;Count: %d\n", Temp, Humi,++cnt);
+        sprintf(tmp, "Temp: %.1f;Humi: %.1f;Count: %d\n", Temp, Humi,++cnt);
         // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
-        make_file(tmp);
+        make_file();
         sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f}}", Temp, Humi);
         return;
 }
