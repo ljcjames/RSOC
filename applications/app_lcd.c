@@ -23,7 +23,7 @@ void app_lcd_string(void){
     /* show some string on lcd */
     lcd_show_string(10, 69, 16, "Hello, RT-Thread!");
     lcd_show_string(10, 69 + 16, 24, "RT-Thread");
-    lcd_show_string(10, 69 + 16 + 24, 32, "RT-Thread");
+    lcd_show_string(10, 69 + 16 + 24, 32, "123");
 
     /* draw a line on lcd */
     lcd_draw_line(0, 69 + 16 + 24 + 32, 240, 69 + 16 + 24 + 32);

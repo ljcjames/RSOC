@@ -50,7 +50,8 @@
 //     return 0;
 // }
 #include <rtthread.h>
-#include<board.h>
+#include <board.h>
+#include "init.h"
 #include <drv_gpio.h>
 #ifndef RT_USING_NANO
 #include <rtdevice.h>
@@ -61,6 +62,7 @@
 
 int main(void)
 {
+    main_init();
     rt_pin_mode(GPIO_LED_B, PIN_MODE_OUTPUT);
     while(1)
     {
