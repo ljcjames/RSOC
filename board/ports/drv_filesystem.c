@@ -84,7 +84,39 @@ static int onboard_fal_mount(void)
             LOG_D("You should create a filesystem on the block device first!");
         }        
     }
+    
+    int ret;
 
+    /* 创建目录 */
+    ret = mkdir("/fal/test", 0x777);
+    if (ret < 0)
+    {
+        /* 创建目录失败 */
+        rt_kprintf("dir error!\n");
+    }
+    else
+    {
+        /* 创建目录成功 */
+        rt_kprintf("mkdir ok!\n");
+    }
+    /* 挂载块设备"font"到 DFS 目录/fal/test中 */
+    if (dfs_mount("font", "/fal/test", "elm", 0, 0) == 0)
+    {
+        LOG_I("font initialized!");
+    }
+    else
+    {
+        dfs_mkfs("elm", "font");
+        if (dfs_mount("font", "/fal/test", "elm", 0, 0) == 0)
+        {
+            LOG_I("font initialized!");
+        }
+        else
+        {
+            LOG_E("Failed to initialize font!");
+            LOG_D("You should create a filesystem(font) on the block device first!");
+        }        
+    }
     return RT_EOK;
 }
 #endif /*BSP_USING_FLASH_FATFS*/

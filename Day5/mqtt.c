@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "aht10.h"
+#include <dfs_posix.h>
 
 char DEMO_PRODUCT_KEY[IOTX_PRODUCT_KEY_LEN + 1] = {0};
 char DEMO_DEVICE_NAME[IOTX_DEVICE_NAME_LEN + 1] = {0};
@@ -49,6 +50,7 @@ static void example_message_arrive(void *pcontext, void *pclient, iotx_mqtt_even
             /* print topic name and topic message */
             EXAMPLE_TRACE("Message Arrived:");
             rt_pin_mode(GPIO_LED_R, PIN_MODE_OUTPUT);
+            //topic_info->payload 为发送的内容，可以据此设置命令
             if(rt_pin_read(GPIO_LED_R) == PIN_HIGH)
             {
                 // rt_kprintf("LED_R should be ON\n");
@@ -94,13 +96,40 @@ static int example_subscribe(void *handle)
     HAL_Free(topic);
     return 0;
 }
+void make_file(char *String)
+{
+    //文件描述符
+    int fd;
 
-        char tmp[256];
+    //用只写方式打开文件,如果没有该文件,则创建一个文件
+    fd = open("/fal/test/Data.txt", O_APPEND | O_CREAT);
+
+    //如果打开成功
+    if (fd >= 0)
+    {
+        //写入文件
+        write(fd, String, sizeof(String));
+
+        rt_kprintf("Write done.\n");
+
+        //关闭文件
+        close(fd);
+    }
+    else
+    {
+        rt_kprintf("File Open Fail.\n");
+    }
+    return;
+}
+char tmp[256];
+int cnt = 0;
 void tmp_payload(void)
 {
      // 读取温湿度值
         Humi = aht10_read_humidity(Dev);
         Temp = aht10_read_temperature(Dev);
+        sprintf(tmp, "Temp：%f ; Humi：%f ; Count： %d", Temp, Humi,++cnt);
+        make_file(tmp);
         sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f}}", Temp, Humi);
         rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
         return;
