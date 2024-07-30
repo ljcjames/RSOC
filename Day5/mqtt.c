@@ -51,10 +51,12 @@ static void example_message_arrive(void *pcontext, void *pclient, iotx_mqtt_even
             rt_pin_mode(GPIO_LED_R, PIN_MODE_OUTPUT);
             if(rt_pin_read(GPIO_LED_R) == PIN_HIGH)
             {
+                // rt_kprintf("LED_R should be ON\n");
                 rt_pin_write(GPIO_LED_R, PIN_LOW);
             }
             else
             {
+                // rt_kprintf("LED_R should be OFF\n");
                 rt_pin_write(GPIO_LED_R, PIN_HIGH);
             }
             EXAMPLE_TRACE("Topic  : %.*s", topic_info->topic_len, topic_info->ptopic);
