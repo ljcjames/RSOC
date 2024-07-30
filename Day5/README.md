@@ -238,6 +238,8 @@ W25Q64→注册为spi20设备，挂载到spi2总线上（**SPI设备**）→*通
 
 ![分区表](image-2.png)
 
+[文件系统操作样例代码](Day5\filesystem.c)
+
 ### DFS结合FAL配置W25Q64
 ![DFS结合FAL配置W25Q64](image-1.png)
 1. 开启板上外设
