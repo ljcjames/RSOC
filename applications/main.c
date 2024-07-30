@@ -51,7 +51,7 @@
 // }
 #include <rtthread.h>
 #include <dfs_fs.h>
-
+#include <drv_gpio.h>
 #define DBG_TAG "main"
 #define DBG_LVL DBG_LOG
 #include <rtdbg.h>
