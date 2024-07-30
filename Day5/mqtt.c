@@ -110,7 +110,7 @@ void make_file(char *String)
         //写入文件
         write(fd, String, sizeof(String));
 
-        rt_kprintf("Write done.\n");
+        // rt_kprintf("Write done.\n");
 
         //关闭文件
         close(fd);
@@ -128,7 +128,7 @@ void tmp_payload(void)
      // 读取温湿度值
         Humi = aht10_read_humidity(Dev);
         Temp = aht10_read_temperature(Dev);
-        sprintf(tmp, "Temp：%f ; Humi：%f ; Count： %d", Temp, Humi,++cnt);
+        sprintf(tmp, "Temp:%f ; Humi:%f ; Count: %d", Temp, Humi,++cnt);
         make_file(tmp);
         sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f}}", Temp, Humi);
         // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
