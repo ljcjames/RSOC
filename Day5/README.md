@@ -240,8 +240,37 @@ W25Q64→注册为spi20设备，挂载到spi2总线上（**SPI设备**）→*通
 
 ### DFS结合FAL配置W25Q64
 ![DFS结合FAL配置W25Q64](image-1.png)
+1. 开启板上外设
 
+   ![文件系统开关1](文件系统开关1.png)
 
+2. 配置自动挂载
+
+   ![文件系统开关2](文件系统开关2.png)yw
+
+3. 配置Component组件
+
+   ![文件系统开关3](文件系统开关3.png)
+
+4. 配置DFS
+
+   ![文件系统开关4](文件系统开关4.png)
+
+5. 配置elmFat
+
+   ![文件系统开关5](文件系统开关5.png)
+因为WiFi和flash挂在同一个spi下
+所以需要先关闭WiFi,在main函数加以下代码
+计算引脚 CS:90  (F-A)*16 + 10 = 90
+``` c
+#define WIFI_CS GET_PIN(F, 10)
+void WIFI_CS_PULL_DOWM(void)
+{
+    rt_pin_mode(WIFI_CS, PIN_MODE_OUTPUT);
+    rt_pin_write(WIFI_CS, PIN_LOW);
+}
+INIT_BOARD_EXPORT(WIFI_CS GET_PIN);
+```
 ## 我的实践
 ### 读取传感器数据，上传到阿里云
 （合并头两个代码），拼接字符串时我用了`sprintf`，其实应该也可以样例原有的`HAL_Snprintf`的
