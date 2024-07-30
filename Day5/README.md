@@ -16,7 +16,7 @@ ENV Kconfig配置文件
 
 使用直接驱动的[这个ath10.c](packages\aht10-latest\aht10.c)就行了
 
-#### 样例代码
+#### AHT10样例代码
 ``` c
 #include <board.h>
 #include <rtthread.h>
@@ -149,6 +149,7 @@ HAL_Snprintf(topic, topic_len, fmt, DEMO_PRODUCT_KEY, DEMO_DEVICE_NAME);
 4.  在阿里云网页对应设备Topic列表可以发布消息（msh中可以收到）
 5.  发现运行时，shell命令用不了了，因为样例导出的命令用shell线程去跑
 6.  要把导出的封装为线程,即加入以下内容且把`mqtt_example_main()`的参数改为`void *parameter`
+
 ``` c
 #define THREAD_PRIORITY 25
 #define THREAD_STACK_SIZE 4096
@@ -231,6 +232,7 @@ int unlink(const char *pathname); //删除文件
 W25Q64→注册为spi20设备，挂载到spi2总线上（**SPI设备**）→*通过SFUD驱动*`rt_sfud_flash_probe()`→跟一个命名为"W25Q64"的SPI_FLASH设备进行绑定(**SPI_FLASH设备**)→*通过FAL抽象层*→对SPI_FLASH设备进行分区，将对应分区注册为BLK（块）设备（**BLK设备**）→对BLK设备格式化
 ![初始化流程图](image-3.png)
 **分区表**
+
 | （不用管） | 分区名称 | 位置 | 偏移量 | 大小 |
 | --- | --- | --- | --- | --- |
 
