@@ -563,7 +563,6 @@
 #define BSP_USING_FLASH_FATFS
 #define BSP_USING_FLASH_FS_AUTO_MOUNT
 #define BSP_USING_FAL
-#define BSP_USING_RW007_WLAN
 #define BSP_USING_AHT21
 /* end of Onboard Peripheral Drivers */
 
