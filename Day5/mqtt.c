@@ -23,6 +23,7 @@ int HAL_Snprintf(char *str, const int len, const char *fmt, ...);
 
 //定义接受文件内容的缓冲区
 char buffer[100] = {};
+char tmp[256];
 
 #define GPIO_LED_B GET_PIN(F,11)
 #define GPIO_LED_R GET_PIN(F,12)
@@ -100,11 +101,11 @@ static int example_subscribe(void *handle)
     return 0;
 }
 
-void make_file(char *String)
+void make_file()
 {
     //文件描述符
     int fd;
-    String[] = "Hello, RT-Thread.Welcom to RSOC!\n temp: 123, humi: 789";
+    // String = "Hello, RT-Thread.Welcom to RSOC!\n temp: 123, humi: 789";
     //用只写方式打开文件,如果没有该文件,则创建一个文件
     fd = open("/fal/test/Data.txt", O_WRONLY | O_CREAT);
     // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,String);
@@ -112,7 +113,7 @@ void make_file(char *String)
     if (fd >= 0)
     {
         //写入文件
-        write(fd, String, sizeof(String));
+        write(fd, tmp, sizeof(tmp));
 
         // rt_kprintf("Write done.\n");
 
@@ -150,13 +151,13 @@ void make_file(char *String)
     }
     return;
 }
-char tmp[256];
 int cnt = 0;
 void tmp_payload(void)
 {
      // 读取温湿度值
         Humi = aht10_read_humidity(Dev);
         Temp = aht10_read_temperature(Dev);
+        memset(tmp, 0, sizeof(tmp));
         sprintf(tmp, "Temp:%f;Humi:%f;Count:%d", Temp, Humi,++cnt);
         // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
         make_file(tmp);
