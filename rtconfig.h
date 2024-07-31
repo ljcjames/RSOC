@@ -131,6 +131,12 @@
 #define RT_USING_I2C
 #define RT_USING_I2C_BITOPS
 #define RT_USING_PWM
+#define RT_USING_SDIO
+#define RT_SDIO_STACK_SIZE 512
+#define RT_SDIO_THREAD_PRIORITY 15
+#define RT_MMCSD_STACK_SIZE 1024
+#define RT_MMCSD_THREAD_PREORITY 22
+#define RT_MMCSD_MAX_PARTITION 16
 #define RT_USING_SPI
 #define RT_USING_SFUD
 #define RT_SFUD_USING_SFDP
@@ -446,6 +452,7 @@
 
 /* STM32 HAL & SDK Drivers */
 
+#define SDIO_MAX_FREQ 1000000
 /* end of STM32 HAL & SDK Drivers */
 
 /* Infineon HAL Packages */
@@ -560,6 +567,8 @@
 #define BSP_USING_ONBOARD_LCD_PWM_BL
 #define BSP_USING_SPI_FLASH
 #define BSP_USING_FS
+#define BSP_USING_SDCARD_FATFS
+#define BSP_USING_FS_AUTO_MOUNT
 #define BSP_USING_FLASH_FATFS
 #define BSP_USING_FLASH_FS_AUTO_MOUNT
 #define BSP_USING_FAL
@@ -582,6 +591,7 @@
 #define BSP_USING_I2C3
 #define BSP_I2C3_SCL_PIN 64
 #define BSP_I2C3_SDA_PIN 65
+#define BSP_USING_SDIO
 #define BSP_USING_EXT_FMC_IO
 #define BSP_USING_FMC
 /* end of On-chip Peripheral Drivers */
