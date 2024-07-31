@@ -107,7 +107,7 @@ void make_file()
     int fd;
     // String = "Hello, RT-Thread.Welcom to RSOC!\n temp: 123, humi: 789";
     //用只写方式打开文件,如果没有该文件,则创建一个文件
-    fd = open("/fal/test/Data.txt", O_WRONLY | O_CREAT);
+    fd = open("/fal/test/Data.txt", O_APPEND | O_CREAT);
     // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,String);
     //如果打开成功
     if (fd >= 0)
@@ -158,7 +158,7 @@ void tmp_payload(void)
         Humi = aht10_read_humidity(Dev);
         Temp = aht10_read_temperature(Dev);
         memset(tmp, 0, sizeof(tmp));
-        sprintf(tmp, "Temp:%f;Humi:%f;Count:%d", Temp, Humi,++cnt);
+        sprintf(tmp, "Temp: %f;Humi: %f;Count: %d\n", Temp, Humi,++cnt);
         // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
         make_file(tmp);
         sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f}}", Temp, Humi);
