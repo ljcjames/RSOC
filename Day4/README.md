@@ -8,11 +8,28 @@
 • 代码框架会变复杂，但是从上面的优点来看是值得的
 ![spi驱动与设备驱动分离示意图](image-3.png)
 ### I/O框架
-显示屏、串口通信、flash、SD卡、以太网接口
-图
-open,close...
+I/O设备：显示屏、串口通信、flash、SD卡、以太网接口……
+接口：open,close...
+![I/O框架图](image-4.png)
 ### 派生设备种类
 ![alt text](image.png)
+``` c 
+RT_Device_Class_Char             /* 字符设备       */
+RT_Device_Class_Block            /* 块设备         */
+RT_Device_Class_NetIf            /* 网络接口设备    */
+RT_Device_Class_MTD              /* 内存设备       */
+RT_Device_Class_RTC              /* RTC 设备        */
+RT_Device_Class_Sound            /* 声音设备        */
+RT_Device_Class_Graphic          /* 图形设备        */
+RT_Device_Class_I2CBUS           /* I2C 总线设备     */
+RT_Device_Class_USBDevice        /* USB device 设备  */
+RT_Device_Class_USBHost          /* USB host 设备   */
+RT_Device_Class_SPIBUS           /* SPI 总线设备     */
+RT_Device_Class_SPIDevice        /* SPI 设备        */
+RT_Device_Class_SDIO             /* SDIO 设备       */
+RT_Device_Class_Miscellaneous    /* 杂类设备        */
+
+```
 ### 字符设备、块设备
 #### 字符设备
 顺序读取：键盘、串口
