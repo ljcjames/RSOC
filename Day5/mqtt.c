@@ -157,7 +157,7 @@ void tmp_payload(void)
      // 读取温湿度值
         Humi = aht10_read_humidity(Dev);
         Temp = aht10_read_temperature(Dev);
-        sprintf(tmp, "Temp:%f ; Humi:%f ; Count: %d", Temp, Humi,++cnt);
+        sprintf(tmp, "Temp:%f;Humi:%f;Count:%d", Temp, Humi,++cnt);
         // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
         make_file(tmp);
         sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f}}", Temp, Humi);
