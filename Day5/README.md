@@ -8,10 +8,10 @@ ENV Kconfig配置文件
 #### 配置
 在menuconfig选择,最终在[**Kconfig这里**](board\Kconfig)使能（勾选上宏）
 1. 使能驱动AHT21(AHT10也适用，且会同时使能软件包)
-![驱动使能](https://github.com/ljcjames/RSOC/blob/lcd/Day5/image-4.png?raw=true)
+![驱动使能](image-4.png)
 2. 记得 `pkg --update`
 3. 补充rt_vsnprintf_full软件包，使kprintf可以用`%.3f`（可以按`/`搜索）
-   ![rt_vsnprintf_full软件包使能](https://github.com/ljcjames/RSOC/blob/lcd/Day5/image-5.png?raw=true)
+   ![rt_vsnprintf_full软件包使能](image-5.png)
 4. 还是要记得 `pkg --update`
 
 使用直接驱动的[这个ath10.c](packages\aht10-latest\aht10.c)就行了
@@ -131,9 +131,9 @@ MQTT（Message Queuing Telemetry Transport）是一种轻量级、基于**发布
 3. 功能定义 → 前往编辑草稿 → 添加自定义功能（标识符发布时要用，步长即精度）→ 发布上线
 4. 创建设备（产品选择之前创建的）
 5. 打开RW007(网络连接)，注意修改对应数字
-    ![alt text](https://github.com/ljcjames/RSOC/blob/lcd/Day5/image-6.png?raw=true)
+    ![alt text](image-6.png)
 6. menuconfig 阿里云软件包配置相应名称密码（在对应**产品**页顶端，**设备**页**MQTT连接参数**点击“查看”），同时**使能下方sample**（图中没标出）
-   ![阿里云软件包配置相应名称密码](https://github.com/ljcjames/RSOC/blob/lcd/Day5/MQTT配置3.png?raw=true)
+   ![阿里云软件包配置相应名称密码](MQTT配置3.png)
 7. `pkg --update`
 8. 把此处[packages\ali-iotkit-v3.0.2\ports\wrapper.c](packages\ali-iotkit-v3.0.2\ports\wrapper.c)的`RT_WEAK`改为`rt_weak`
 #### MQTT样例
@@ -216,7 +216,7 @@ int unlink(const char *pathname); //删除文件
 | filesystem_operation_table | 记录操作函数如何实现（如open，close……）|
 |相关锁 | 如fd的互斥锁等 |
 
-![alt text](https://github.com/ljcjames/RSOC/blob/lcd/Day5/image.png?raw=true)
+![alt text](image.png)
 
 ### FAL (搭配SFUD驱动使用)
 #### SFUD
@@ -230,22 +230,146 @@ int unlink(const char *pathname); //删除文件
 ![FAL API图](https://www.rt-thread.org/document/site/rt-thread-version/rt-thread-standard/programming-manual/fal/figures/fal-api.png)
 #### FAL 初始化流程
 W25Q64→注册为spi20设备，挂载到spi2总线上（**SPI设备**）→*通过SFUD驱动*`rt_sfud_flash_probe()`→跟一个命名为"W25Q64"的SPI_FLASH设备进行绑定(**SPI_FLASH设备**)→*通过FAL抽象层*→对SPI_FLASH设备进行分区，将对应分区注册为BLK（块）设备（**BLK设备**）→对BLK设备格式化
-![初始化流程图](https://github.com/ljcjames/RSOC/blob/lcd/Day5/image-3.png?raw=true)
+![初始化流程图](image-3.png)
 **分区表**
 
 | （不用管） | 分区名称 | 位置 | 偏移量 | 大小 |
 | - | - | - | - | - |
 
+![分区表](image-2.png)
 
-![分区表](https://github.com/ljcjames/RSOC/blob/lcd/Day5/image-2.png?raw=true)
+[文件系统操作样例代码](Day5\filesystem.c)
 
 ### DFS结合FAL配置W25Q64
-![DFS结合FAL配置W25Q64](https://github.com/ljcjames/RSOC/blob/lcd/Day5/image-1.png?raw=true)
+![DFS结合FAL配置W25Q64](image-1.png)
+1. 开启板上外设
 
+   ![文件系统开关1](文件系统开关1.png)
 
+2. 配置自动挂载
+
+   ![文件系统开关2](文件系统开关2.png)yw
+
+3. 配置Component组件
+
+   ![文件系统开关3](文件系统开关3.png)
+
+4. 配置DFS
+
+   ![文件系统开关4](文件系统开关4.png)
+
+5. 配置elmFat
+
+   ![文件系统开关5](文件系统开关5.png)
+因为WiFi和flash挂在同一个spi下
+所以需要先关闭WiFi,在main函数加以下代码
+计算引脚 CS:90  (F-A)*16 + 10 = 90
+``` c
+#define WIFI_CS GET_PIN(F, 10)
+void WIFI_CS_PULL_DOWM(void)
+{
+    rt_pin_mode(WIFI_CS, PIN_MODE_OUTPUT);
+    rt_pin_write(WIFI_CS, PIN_LOW);
+}
+INIT_BOARD_EXPORT(WIFI_CS GET_PIN);
+```
 ## 我的实践
-### 读取传感器数据，上传到阿里云
+
+### 1. 使用AHT10软件包采集温湿度并上传到阿里云
+
 （合并头两个代码），拼接字符串时我用了`sprintf`，其实应该也可以样例原有的`HAL_Snprintf`的
+
+### 2. 将font分区给挂载上。在温湿度上传上传云端的同时，将数据同步放在文件系统处，
+文件名为：Data.txt；文件内容：
+>  Temp：XX ; Humi：XX ; Count： 1（自上电起所采集的数据次数）
+                  Temp：XX ; Humi：XX ; Count： 2（自上电起所采集的数据次数）
+                  Temp：XX ; Humi：XX ; Count： 3（自上电起所采集的数据次数）
+ 
+
+   在`drv_filesystem.c`中实现挂载font
+   ``` c
+   fal_init();
+   fal_blk_device_create("font");
+   /* 创建目录 */
+    ret = mkdir("/fal/test", 0x777);
+    if (ret < 0)
+    {
+        /* 创建目录失败 */
+        rt_kprintf("dir error!\n");
+    }
+    else
+    {
+        /* 创建目录成功 */
+        rt_kprintf("mkdir ok!\n");
+    }
+    /* 挂载块设备"font"到 DFS 目录/fal/test中 */
+    if (dfs_mount("font", "/fal/test", "elm", 0, 0) == 0)
+    {
+        LOG_I("font initialized!");
+    }
+    else
+    {
+        dfs_mkfs("elm", "font");
+        if (dfs_mount("font", "/fal/test", "elm", 0, 0) == 0)
+        {
+            LOG_I("font initialized!");
+        }
+        else
+        {
+            LOG_E("Failed to initialize font!");
+            LOG_D("You should create a filesystem(font) on the block device first!");
+        }        
+    }
+   ```
+
+   接着文件末尾添加数据(Data.txt)
+   ![alt text](image-7.png)
+
+   ``` c
+   void make_file()
+    {
+    //文件描述符
+    int fd;
+
+    //用只写方式打开文件,如果没有该文件,则创建一个文件
+    fd = open("/fal/test/Data.txt", O_WRONLY | O_CREAT | O_APPEND); //和原来相比，只是把O_TRUNC参数更改为O_APPEND，即更改为打开后，如果再进行写入，将从文件的末尾位置开始写。
+    // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,String);
+    //如果打开成功
+    if (fd >= 0)
+    {
+        //写入文件
+        write(fd, tmp, sizeof(tmp));
+
+        // rt_kprintf("Write done.\n");
+
+        //关闭文件
+        close(fd);
+    }
+    else
+    {
+        rt_kprintf("File Open Fail.\n");
+    }
+
+    
+        return;
+    }
+   ```
+###   3. 利用云端给开发板发送指令然后实现小灯翻转
+```c 
+rt_pin_mode(GPIO_LED_R, PIN_MODE_OUTPUT);
+//topic_info->payload 为发送的内容，可以据此设置命令
+if(rt_pin_read(GPIO_LED_R) == PIN_HIGH)
+{
+    // rt_kprintf("LED_R should be ON\n");
+    rt_pin_write(GPIO_LED_R, PIN_LOW);
+}
+else
+{
+    // rt_kprintf("LED_R should be OFF\n");
+    rt_pin_write(GPIO_LED_R, PIN_HIGH);
+}
+```
+### 完整代码
 ``` c
 #include "rtthread.h"
 #include "dev_sign_api.h"
@@ -255,6 +379,7 @@ W25Q64→注册为spi20设备，挂载到spi2总线上（**SPI设备**）→*通
 #include <stdio.h>
 #include <string.h>
 #include "aht10.h"
+#include <dfs_posix.h>
 
 char DEMO_PRODUCT_KEY[IOTX_PRODUCT_KEY_LEN + 1] = {0};
 char DEMO_DEVICE_NAME[IOTX_DEVICE_NAME_LEN + 1] = {0};
@@ -268,6 +393,13 @@ int HAL_GetDeviceName(char device_name[IOTX_DEVICE_NAME_LEN + 1]);
 int HAL_GetDeviceSecret(char device_secret[IOTX_DEVICE_SECRET_LEN]);
 uint64_t HAL_UptimeMs(void);
 int HAL_Snprintf(char *str, const int len, const char *fmt, ...);
+
+//定义接受文件内容的缓冲区
+char buffer[1026] = {};
+char tmp[1026];
+
+#define GPIO_LED_B GET_PIN(F,11)
+#define GPIO_LED_R GET_PIN(F,12)
 
 // AHT挂载的总线名字
 #define AHT10_I2C_BUS "i2c3"
@@ -294,6 +426,18 @@ static void example_message_arrive(void *pcontext, void *pclient, iotx_mqtt_even
         case IOTX_MQTT_EVENT_PUBLISH_RECEIVED:
             /* print topic name and topic message */
             EXAMPLE_TRACE("Message Arrived:");
+            rt_pin_mode(GPIO_LED_R, PIN_MODE_OUTPUT);
+            //topic_info->payload 为发送的内容，可以据此设置命令
+            if(rt_pin_read(GPIO_LED_R) == PIN_HIGH)
+            {
+                // rt_kprintf("LED_R should be ON\n");
+                rt_pin_write(GPIO_LED_R, PIN_LOW);
+            }
+            else
+            {
+                // rt_kprintf("LED_R should be OFF\n");
+                rt_pin_write(GPIO_LED_R, PIN_HIGH);
+            }
             EXAMPLE_TRACE("Topic  : %.*s", topic_info->topic_len, topic_info->ptopic);
             EXAMPLE_TRACE("Payload: %.*s", topic_info->payload_len, topic_info->payload);
             EXAMPLE_TRACE("\n");
@@ -330,14 +474,44 @@ static int example_subscribe(void *handle)
     return 0;
 }
 
-        char tmp[256];
+void make_file()
+{
+    //文件描述符
+    int fd;
+
+    //用只写方式打开文件,如果没有该文件,则创建一个文件
+    fd = open("/fal/test/Data.txt", O_WRONLY | O_CREAT | O_APPEND); //和原来相比，只是把O_TRUNC参数更改为O_APPEND，即更改为打开后，如果再进行写入，将从文件的末尾位置开始写。
+    // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,String);
+    //如果打开成功
+    if (fd >= 0)
+    {
+        //写入文件
+        write(fd, tmp, sizeof(tmp));
+
+        // rt_kprintf("Write done.\n");
+
+        //关闭文件
+        close(fd);
+    }
+    else
+    {
+        rt_kprintf("File Open Fail.\n");
+    }
+
+    
+    return;
+}
+int cnt = 0;
 void tmp_payload(void)
 {
      // 读取温湿度值
         Humi = aht10_read_humidity(Dev);
         Temp = aht10_read_temperature(Dev);
+        memset(tmp, 0, sizeof(tmp));
+        sprintf(tmp, "Temp: %.1f;Humi: %.1f;Count: %d\n", Temp, Humi,++cnt);
+        // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
+        make_file();
         sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f}}", Temp, Humi);
-        rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
         return;
 }
 static int example_publish(void *handle)
@@ -352,7 +526,7 @@ static int example_publish(void *handle)
     int             topic_len = 0;
     char           *payload = tmp;
     // strcpy(payload,tmp_payload());
-    rt_kprintf("payload:%s\n",payload);
+    // rt_kprintf("payload:%s\n",payload);
     topic_len = strlen(fmt) + strlen(DEMO_PRODUCT_KEY) + strlen(DEMO_DEVICE_NAME) + 1;
     topic = HAL_Malloc(topic_len);
     if (topic == NULL) {
@@ -391,6 +565,7 @@ static void mqtt_example_main(void *parameter)
 
     EXAMPLE_TRACE("mqtt example");
 
+    
     memset(&mqtt_params, 0x0, sizeof(mqtt_params));
 
     mqtt_params.handle_event.h_fp = example_event_handle;
