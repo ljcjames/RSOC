@@ -106,8 +106,9 @@ void make_file()
     //文件描述符
     int fd;
     // String = "Hello, RT-Thread.Welcom to RSOC!\n temp: 123, humi: 789";
+    
     //用只写方式打开文件,如果没有该文件,则创建一个文件
-    fd = open("/fal/test/Data.txt", O_APPEND | O_CREAT);
+    fd = open("/fal/test/Data.txt", O_WRONLY | O_CREAT | O_APPEND,0); //和原来相比，只是把O_TRUNC参数更改为O_APPEND，即更改为打开后，如果再进行写入，将从文件的末尾位置开始写。
     // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,String);
     //如果打开成功
     if (fd >= 0)
