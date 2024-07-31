@@ -4,7 +4,8 @@
 ![alt text](image.png)
 1. √
 2. 互斥量
-3. 
+3. 挂起：先做其它
+   死锁：互相等待……
 ## 临界区
 only one can use the resource at a time
 
@@ -82,11 +83,11 @@ rt_err_t rt_sem_trytake(rt_sem_t sem);
 ``` c
 rt_err_t rt_sem_release(rt_sem_t sem);
 ```
-## 互斥量
+## 互斥量（互斥锁）
 约等于仅有的一把钥匙
 保护临界资源
-多次获取多次释放？？？
-![alt text](image-7.png)
+1. 互斥量所用权
+2. 防止优先级反转
 ### 优先级反转
 高优先级被低优先级阻塞
 实时：高优先级先执行
@@ -97,13 +98,14 @@ rt_err_t rt_sem_release(rt_sem_t sem);
 ![alt text](image-8.png)
 把A的优先级临时赋C
 ![alt text](image-9.png)
-### 创建和删除???互斥量
+### 创建和删除互斥量
+无论选择 RT_IPC_FLAG_PRIO 还是 RT_IPC_FLAG_FIFO，内核均按照 RT_IPC_FLAG_PRIO 处理
+
 ``` c
 rt_mutex_t rt_mutex_create (const char* name, rt_uint8_t flag);
 rt_err_t rt_mutex_delete (rt_mutex_t mutex);
 
 ```
-无论选择 RT_IPC_FLAG_PRIO 还是 RT_IPC_FLAG_FIFO，内核均按照 RT_IPC_FLAG_PRIO 处理
 
 ### 初始化和脱离互斥量
 ``` c
@@ -111,50 +113,74 @@ rt_err_t rt_mutex_init (rt_mutex_t mutex, const char* name, rt_uint8_t flag);
 rt_err_t rt_mutex_detach (rt_mutex_t mutex);
 ```
 ### 获取互斥量
-+1???
+如果互斥量已经被当前线程控制，在当前线程再一次获取，那么该互斥量的持有计数+1，当前线程不会挂起
 ``` c
 rt_err_t rt_mutex_take (rt_mutex_t mutex, rt_int32_t time);
 ```
-？？？
+
 ### 无等待获取互斥量
 ``` c
 rt_err_t rt_mutex_trytake(rt_mutex_t mutex);
 ```
+
 ### 释放互斥量
+信号量：谁都可以获取，谁都可以释放
+互斥量：只有拥有互斥量控制权的线程才可以释放，每释放一次，持有计数-1，当持有计数为0时，才变为可用
 ``` c
 rt_err_t rt_mutex_release (rt_mutex_t mutex);
 ```
 
 ## 事件集
-？？？一堆事件在32bit中，在线程中与，或判断执行
+一堆事件在32bit中（32个事件0/1），在线程中与，或判断执行
+- 发送： 从中断/线程中
+- 接收： 线程接收，条件检查
 ![alt text](image-10.png)
 ### 创建事件集
 ``` c
 rt_event_t rt_event_create(const char* name, rt_uint8_t flag);
 ```
+
 ### 删除事件集
-？？？唤醒
+删除前唤醒所有挂起在该事件集上的线程，返回`-RT_ERROR`
 create用这个
 ``` c
 rt_err_t rt_event_delete(rt_event_t event);
 ```
+
 ### 初始化事件集
+静态事件集对象的内存一般放于**读写数据段**或**未初始化数据段**中
 ``` c
 rt_err_t rt_event_init(rt_event_t event, const char* name, rt_uint8_t flag);
 ```
+ 
 ### 脱离事件集
 create 不能用
 ``` c
 rt_err_t rt_event_detach(rt_event_t event);
 ```
-### ……
-jssjian
+### 发送事件集
+set 即我们要发送的（1<<n）
+`rt_err_t rt_event_send(rt_event_t event, rt_uint32_t set);`
+### 接收事件集
+set :当前目标需要的事件
+option ： RT_EVENT_FLAG_OR  RT_EVENT_FLAG_AND
+recved : 接收到刚发送的事件
+```c 
+rt_err_t rt_event_recv(rt_event_t event,
+                           rt_uint32_t set,
+                           rt_uint8_t option,
+                           rt_int32_t timeout,
+                           rt_uint32_t* recved);
+
+```
+
 
 ## （消息）邮箱
-？？？
+也叫交换信息
 4个字节（32位）恰好可以传递指针
 ![alt text](image-11.png)
 ### 创建邮箱
+这块内存的大小等于邮件大小（4 字节）与邮箱容量(size)的乘积
 ``` c
 rt_mailbox_t rt_mb_create(const char* name, rt_uint32_t size, rt_uint8_t flag);
 ```
@@ -164,34 +190,75 @@ rt_err_t rt_mb_delete(rt_mailbox_t mb);
 ```
 ### 初始化邮箱
 ``` c
-rt_err_t rt_mb_init(rt_mailbox_t mb, const char* name, rt_uint32_t size, rt_uint8_t flag);
-```
-### 脱离邮箱
+  rt_err_t rt_mb_init(rt_mailbox_t mb,
+                    const char* name,
+                    void* msgpool,
+                    rt_size_t size,
+                    rt_uint8_t flag)
 
-### 等待
-不能在中断中使用？？？
+```
+### 发送邮件
+
+``` c
+rt_err_t rt_mb_send (rt_mailbox_t mb, rt_uint32_t value);
+```
+
+### 等待方式发送
+邮箱满了可以等待一段时间，不能在中断中使用
+
+### 接收邮件
+地址存到val ue
+``` c 
+rt_err_t rt_mb_recv (rt_mailbox_t mb, rt_uint32_t* value, rt_int32_t timeout);
+```
 ### ...
+
+
 
 ## 消息队列
 ![alt text](image-11.png)
 ### 异步通信
-1.vs2.
+超时机制即timeout
 ![alt text](image-12.png)
-1消息 多线程？
-FIFO 对于谁
-launch
-停止？
-。。。
+FIFO ：线程先得到先进入消息队列的消息
+RT_IPC_FLAG_FIFO 或 RT_IPC_FLAG_PRIO ：哪个线程先
+### 创建消息队列
+区别：rt_size_t msg_size, rt_size_t max_msgs,
+``` c
+rt_mq_t rt_mq_create(const char* name,
+                     rt_size_t msg_size,
+                     rt_size_t max_msgs,
+                     rt_uint8_t flag);
+```
+![alt text](image-13.png)
+### 发送
+中断里面不可以用`rt_mq_send_wait`
+``` c
+rt_err_t rt_mq_send (rt_mq_t mq, void* buffer, rt_size_t size);
+```
+IPC示例
+![ipc_sample](image-14.png)
+[示例代码在这里](.\packages\kernel_samples-latest\zh)
 [一个好用的串口工具类似mobaxterm](https://wterm.wkjay.com/)
 
-dist 的好处
-加入sample
 配置完任何软件包都要在env中
 ``` c
 pkgs --update
 ```
 
-## 示例按键灭灯
+## 按键灭灯实践
+### 灭了怎么点都不亮
+因为按键按灭就没再点亮
+在key线程循环开始每次点亮？
+### 灯轻微闪烁，几乎看不出
+不能及时获取？用无等待获取信号量？
+### 还是一样……
+因为采用了延时防止误触，判断是否按下按键花了一点时间
+~~只要知道按键没有按下就亮灯就行~~
+在下次判断按键没按下之后再亮灯
+### 居然在按键的线程在控制led
+改为没摁才释放信号量，led线程获取到后设为亮灯
+并在获取信号量前将led设为灭灯
 ``` c
 #include <board.h>
 #include <rtthread.h>
@@ -303,15 +370,4 @@ static void led_name_entry(void *parameter)
     }
 }
 ```
-### 灭了怎么点都不亮
-因为按键按灭就没再点亮
-在key线程循环开始每次点亮？
-### 灯轻微闪烁，几乎看不出
-不能及时获取？用无等待获取信号量？
-### 还是一样……
-因为采用了延时防止误触，判断是否按下按键花了一点时间
-~~只要知道按键没有按下就亮灯就行~~
-在下次判断按键没按下之后再亮灯
-### 居然在按键的线程在控制led
-改为没摁才释放信号量，led线程获取到后设为亮灯
-并在获取信号量前将led设为灭灯
+

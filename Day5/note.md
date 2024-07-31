@@ -1,3 +1,4 @@
+``` c
 /*
  * Copyright (c) 2006-2021, RT-Thread Development Team
  *
@@ -162,3 +163,4 @@ static int filesystem_mount(void)
     return RT_EOK;
 }
 INIT_APP_EXPORT(filesystem_mount);
+```

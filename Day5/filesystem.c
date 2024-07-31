@@ -5,7 +5,7 @@
 #include <dfs_posix.h>//需要添加软件包进这里
 
 //定义要写入的内容
-char String[] = "Hello, RT-Thread.Welcom to RSOC!";
+char String[] = "Hello, RT-Thread.Welcom to RSOC!\n temp: 123, humi: 789";
 
 //定义接受文件内容的缓冲区
 char buffer[100] = {};
