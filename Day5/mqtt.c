@@ -21,6 +21,9 @@ int HAL_GetDeviceSecret(char device_secret[IOTX_DEVICE_SECRET_LEN]);
 uint64_t HAL_UptimeMs(void);
 int HAL_Snprintf(char *str, const int len, const char *fmt, ...);
 
+//定义接受文件内容的缓冲区
+char buffer[100] = {};
+
 #define GPIO_LED_B GET_PIN(F,11)
 #define GPIO_LED_R GET_PIN(F,12)
 
@@ -96,6 +99,7 @@ static int example_subscribe(void *handle)
     HAL_Free(topic);
     return 0;
 }
+
 void make_file(char *String)
 {
     //文件描述符
@@ -103,7 +107,7 @@ void make_file(char *String)
 
     //用只写方式打开文件,如果没有该文件,则创建一个文件
     fd = open("/fal/test/Data.txt", O_WRONLY | O_CREAT);
-
+    // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,String);
     //如果打开成功
     if (fd >= 0)
     {
@@ -111,6 +115,31 @@ void make_file(char *String)
         write(fd, String, sizeof(String));
 
         // rt_kprintf("Write done.\n");
+
+        //关闭文件
+        close(fd);
+    }
+    else
+    {
+        rt_kprintf("File Open Fail.\n");
+    }
+
+    //用只读方式打开文件
+    fd = open("/fal/test/Data.txt", O_RDONLY);
+
+    if (fd>= 0)
+    {
+        //读取文件内容
+        rt_uint32_t size = read(fd, buffer, sizeof(buffer));
+    
+        if (size < 0)
+        {
+            rt_kprintf("Read File Fail.\n");
+            return ;
+        }
+
+        //输出文件内容
+        rt_kprintf("Read from file test.txt : %s \n", buffer);
 
         //关闭文件
         close(fd);
@@ -129,9 +158,9 @@ void tmp_payload(void)
         Humi = aht10_read_humidity(Dev);
         Temp = aht10_read_temperature(Dev);
         sprintf(tmp, "Temp:%f ; Humi:%f ; Count: %d", Temp, Humi,++cnt);
+        // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
         make_file(tmp);
         sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f}}", Temp, Humi);
-        // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
         return;
 }
 static int example_publish(void *handle)
