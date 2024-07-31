@@ -270,6 +270,7 @@
 #define RT_USING_ULOG
 #define ULOG_OUTPUT_LVL_D
 #define ULOG_OUTPUT_LVL 7
+#define ULOG_USING_ISR_LOG
 #define ULOG_ASSERT_ENABLE
 #define ULOG_LINE_BUF_SIZE 128
 
@@ -463,6 +464,8 @@
 
 #define PKG_USING_AHT10
 #define PKG_USING_AHT10_LATEST_VERSION
+#define PKG_USING_ICM20608
+#define PKG_USING_ICM20608_LATEST_VERSION
 /* end of sensors drivers */
 
 /* touch drivers */
@@ -567,6 +570,7 @@
 #define BSP_USING_FAL
 #define BSP_USING_RW007_WLAN
 #define BSP_USING_AHT21
+#define BSP_USING_ICM20608
 /* end of Onboard Peripheral Drivers */
 
 /* On-chip Peripheral Drivers */
@@ -581,6 +585,9 @@
 #define BSP_USING_SPI
 #define BSP_USING_SPI2
 #define BSP_USING_I2C
+#define BSP_USING_I2C2
+#define BSP_I2C2_SCL_PIN 81
+#define BSP_I2C2_SDA_PIN 80
 #define BSP_USING_I2C3
 #define BSP_I2C3_SCL_PIN 64
 #define BSP_I2C3_SDA_PIN 65
