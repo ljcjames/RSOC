@@ -104,7 +104,7 @@ void make_file(char *String)
 {
     //文件描述符
     int fd;
-
+    String[] = "Hello, RT-Thread.Welcom to RSOC!\n temp: 123, humi: 789";
     //用只写方式打开文件,如果没有该文件,则创建一个文件
     fd = open("/fal/test/Data.txt", O_WRONLY | O_CREAT);
     // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,String);

@@ -2,7 +2,9 @@ from building import *
 import os
 
 cwd     = GetCurrentDir()
-src     = Glob('*.c')
+src     = [
+    'filesystem.c',
+]
 
 CPPPATH = [cwd]
 
