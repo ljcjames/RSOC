@@ -157,6 +157,7 @@ void tmp_payload(void)
 }
 void test_lcd()
 {
+    // show_str(10, 10+24+32+24+32, 100, 32, "你好", 32);
     ath_init();
     while(1)
     {

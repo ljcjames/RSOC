@@ -415,6 +415,8 @@
 
 /* tools packages */
 
+#define PKG_USING_CHINESE_FONT_LIBRARY
+#define PKG_USING_CHINESE_FONT_LIBRARY_LATEST_VERSION
 /* end of tools packages */
 
 /* system packages */

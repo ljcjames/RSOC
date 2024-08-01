@@ -11,6 +11,7 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <board.h>
+#include "drv_common.h"
 
 #define DBG_TAG "main"
 #define DBG_LVL DBG_LOG
@@ -23,8 +24,15 @@
 #define PIN_LED_B              GET_PIN(F, 11)      // PF11 :  LED_B        --> LED
 #define PIN_LED_R              GET_PIN(F, 12)      // PF12 :  LED_R        --> LED
 
+extern void wlan_autoconnect_init(void);
+
 int main(void)
 {
+    // /* init Wi-Fi auto connect feature */
+    // wlan_autoconnect_init();
+    // /* enable auto reconnect on WLAN device */
+    // rt_wlan_config_autoreconnect(RT_TRUE);
+    // rt_wlan_connect("ssid", "password");
     // lcd_clear(WHITE);
 
     // /* show RT-Thread logo */
