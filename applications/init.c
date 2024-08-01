@@ -3,6 +3,7 @@
 #include <wlan_mgnt.h>
 #include <wlan_cfg.h>
 #include <wlan_prot.h>
+#include <ap3216c.h>
 
 static int board_init(void)
 {
@@ -20,7 +21,7 @@ INIT_PREV_EXPORT(prev_init);
 
 static int device_init(void)
 {
-   
+
     return 0;
 }
 INIT_DEVICE_EXPORT(device_init);

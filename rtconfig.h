@@ -415,8 +415,6 @@
 
 /* tools packages */
 
-#define PKG_USING_CHINESE_FONT_LIBRARY
-#define PKG_USING_CHINESE_FONT_LIBRARY_LATEST_VERSION
 /* end of tools packages */
 
 /* system packages */
@@ -472,6 +470,8 @@
 
 #define PKG_USING_AHT10
 #define PKG_USING_AHT10_LATEST_VERSION
+#define PKG_USING_AP3216C
+#define PKG_USING_AP3216C_LATEST_VERSION
 #define PKG_USING_ICM20608
 #define PKG_USING_ICM20608_LATEST_VERSION
 /* end of sensors drivers */
@@ -578,6 +578,7 @@
 #define BSP_USING_FAL
 #define BSP_USING_RW007_WLAN
 #define BSP_USING_AHT21
+#define BSP_USING_AP3216C
 #define BSP_USING_ICM20608
 /* end of Onboard Peripheral Drivers */
 

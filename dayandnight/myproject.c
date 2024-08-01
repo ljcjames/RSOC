@@ -6,8 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "aht10.h"
+#include <ap3216c.h>
 #include <dfs_posix.h>
 #include <drv_lcd.h>
+
 
 char DEMO_PRODUCT_KEY[IOTX_PRODUCT_KEY_LEN + 1] = {0};
 char DEMO_DEVICE_NAME[IOTX_DEVICE_NAME_LEN + 1] = {0};
@@ -32,14 +34,20 @@ char tmp[1026];
 // AHT挂载的总线名字
 #define AHT10_I2C_BUS "i2c3"
 
-// AHT设备指针
+
+// AHT,ap3216c设备指针
 aht10_device_t Dev = RT_NULL;
+ap3216c_device_t dev;
 
 // Humi:湿度值,Temp:温度值
 float Humi, Temp;
+rt_uint16_t ps_data;
+float brightness;
+int lcd_y;
 
 void ath_init(void);
 void mqt_init(void);
+int ap3_init(void);
 
 #define EXAMPLE_TRACE(fmt, ...)  \
     do { \
@@ -103,15 +111,25 @@ static int example_subscribe(void *handle)
     HAL_Free(topic);
     return 0;
 }
-
+int plus_lcd_y(int pls)
+{
+    lcd_y+=pls;
+    return lcd_y;
+}
 void show_lcd()
 {
-    lcd_show_string(10, 10, 24, "Temperature:");
+    lcd_y = 0;
+    lcd_show_string(10, plus_lcd_y(10), 24, "Temperature:");
     sprintf(tmp, "%f", Temp);
-    lcd_show_string(10, 10+24, 32, tmp);
-    lcd_show_string(10, 10+24+32, 24, "Humidity:");
+    lcd_show_string(10, plus_lcd_y(24), 32, tmp);
+
+    lcd_show_string(10, plus_lcd_y(32), 24, "Humidity:");
     sprintf(tmp, "%f", Humi);
-    lcd_show_string(10, 10+24+32+24, 32, tmp);
+    lcd_show_string(10, plus_lcd_y(24), 32, tmp);
+
+    lcd_show_string(10, plus_lcd_y(32), 24, "Brightness:");
+    sprintf(tmp, "%f(lux)", brightness);
+    lcd_show_string(10, plus_lcd_y(24), 32, tmp);
 }
 
 void make_file()
@@ -147,6 +165,8 @@ void tmp_payload(void)
      // 读取温湿度值
         Humi = aht10_read_humidity(Dev);
         Temp = aht10_read_temperature(Dev);
+        brightness = ap3216c_read_ambient_light(dev);
+        ps_data = ap3216c_read_ps_data(dev);
         memset(tmp, 0, sizeof(tmp));
         sprintf(tmp, "Temp: %.1f;Humi: %.1f;Count: %d\n", Temp, Humi,++cnt);
         // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
@@ -159,6 +179,7 @@ void test_lcd()
 {
     // show_str(10, 10+24+32+24+32, 100, 32, "你好", 32);
     ath_init();
+    ap3_init();
     while(1)
     {
         tmp_payload();
@@ -277,11 +298,20 @@ void mqt_init(void)
         rt_kprintf("MQTT Thread Create Failed!\n");
     }
 }
+int ap3_init(void){
+    const char* i2c_bus_name = "i2c2";
+    rt_thread_t tid;
+
+    dev = ap3216c_init(i2c_bus_name);
+
+    return 0;
+}
 void my_project(void)
 {
     ath_init();
     
     mqt_init();  
     
+    ap3_init();
 }
 MSH_CMD_EXPORT_ALIAS(my_project,myproject, run my project);
