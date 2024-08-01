@@ -159,7 +159,7 @@ void test_lcd()
     while(1)
     {
         tmp_payload();
-        rt_thread_mdelay(1000);
+        rt_thread_mdelay(100);
     }
 }
 MSH_CMD_EXPORT(test_lcd, run my project);
