@@ -32,12 +32,14 @@ char tmp[1026];
 // AHT挂载的总线名字
 #define AHT10_I2C_BUS "i2c3"
 
-    // AHT设备指针
-    aht10_device_t Dev = RT_NULL;
+// AHT设备指针
+aht10_device_t Dev = RT_NULL;
 
-    // Humi:湿度值,Temp:温度值
-    float Humi, Temp;
+// Humi:湿度值,Temp:温度值
+float Humi, Temp;
 
+void ath_init(void);
+void mqt_init(void);
 
 #define EXAMPLE_TRACE(fmt, ...)  \
     do { \
@@ -104,7 +106,10 @@ static int example_subscribe(void *handle)
 
 void show_lcd()
 {
-    lcd_show_string(10, 69 + 16 + 24, 32, tmp);
+    sprintf(tmp, "Temp: %.3f", Temp);
+    lcd_show_string(10, 10, 24, tmp);
+    sprintf(tmp, "Humi: %.3f", Humi);
+    lcd_show_string(10, 10+24, 24, tmp);
 }
 
 void make_file()
@@ -144,12 +149,13 @@ void tmp_payload(void)
         sprintf(tmp, "Temp: %.1f;Humi: %.1f;Count: %d\n", Temp, Humi,++cnt);
         // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
         make_file();
-        lcd_show_string(10, 69 + 16 + 24, 32, "RT-Thread");
+        show_lcd();
         sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f}}", Temp, Humi);
         return;
 }
 void test_lcd()
 {
+    ath_init();
     while(1)
     {
         tmp_payload();
@@ -245,9 +251,8 @@ static void mqtt_example_main(void *parameter)
 
 rt_thread_t MQTT_Thread = RT_NULL;
 
-void my_project(void)
+void ath_init(void)
 {
-
     // 初始化设备
     Dev = aht10_init(AHT10_I2C_BUS);
     if (Dev == RT_NULL)
@@ -255,7 +260,9 @@ void my_project(void)
         rt_kprintf("AHT10_init Fail");
         return;
     }
-
+}
+void mqt_init(void)
+{
     MQTT_Thread = rt_thread_create("MTQQ_Thread", mqtt_example_main, RT_NULL, THREAD_STACK_SIZE, THREAD_PRIORITY, THREAD_TIMESLICE);
 
     if (MQTT_Thread != RT_NULL)
@@ -266,6 +273,12 @@ void my_project(void)
     {
         rt_kprintf("MQTT Thread Create Failed!\n");
     }
+}
+void my_project(void)
+{
+    ath_init();
+    
+    mqt_init();  
     
 }
 MSH_CMD_EXPORT_ALIAS(my_project,myproject, run my project);

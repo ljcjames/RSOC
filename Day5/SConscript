@@ -2,9 +2,7 @@ from building import *
 import os
 
 cwd     = GetCurrentDir()
-src     = [
-    'mqtt.c',
-]
+src     = [ ]
 
 CPPPATH = [cwd]
 
