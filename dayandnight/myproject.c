@@ -106,10 +106,12 @@ static int example_subscribe(void *handle)
 
 void show_lcd()
 {
-    sprintf(tmp, "Temp: %.3f", Temp);
-    lcd_show_string(10, 10, 24, tmp);
-    sprintf(tmp, "Humi: %.3f", Humi);
-    lcd_show_string(10, 10+24, 24, tmp);
+    lcd_show_string(10, 10, 24, "Temperature:");
+    sprintf(tmp, "%f", Temp);
+    lcd_show_string(10, 10+24, 32, tmp);
+    lcd_show_string(10, 10+24+32, 24, "Humidity:");
+    sprintf(tmp, "%f", Humi);
+    lcd_show_string(10, 10+24+32+24, 32, tmp);
 }
 
 void make_file()
