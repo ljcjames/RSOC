@@ -21,18 +21,80 @@
 #include <rttlogo.h>
 
 /* 配置 LED 灯引脚 */
-#define PIN_LED_B              GET_PIN(F, 11)      // PF11 :  LED_B        --> LED
-#define PIN_LED_R              GET_PIN(F, 12)      // PF12 :  LED_R        --> LED
+#define PIN_LED_B GET_PIN(F, 11) // PF11 :  LED_B        --> LED
+#define PIN_LED_R GET_PIN(F, 12) // PF12 :  LED_R        --> LED
+#define LCD_MAX 240
+
+int roundxy[4][2] = {
+    {0, 0},
+    {0, LCD_MAX},
+    {LCD_MAX, 0},
+    {LCD_MAX, LCD_MAX},
+};
+int xymove[4][2] = {
+    {1, 1},
+    {1, -1},
+    {-1, 1},
+    {-1, -1},
+};
 
 extern void wlan_autoconnect_init(void);
 
+void lcd_black(int x, int y)
+{
+    lcd_address_set(x, y, x, y);
+    lcd_write_half_word(BLACK);
+}
+void xy_round(int x, int y, int x2, int y2, int r,int ii)
+{
+    rt_kprintf("x:%d,y:%d,x2:%d,y2:%d,r:%d\n", x, y, x2, y2, r);
+    for (int i = x; i != x2; i+=xymove[ii][0])
+    {
+        for (int j = y; j != y2; j+=xymove[ii][1])
+        {
+            int newi = x2 - i;
+            int newj = y2 - j;
+            rt_kprintf("(%d,%d,%d)",(newi * newi + newj * newj), newi, newj);
+            if ((newi * newi + newj * newj) > (r * r))
+            {
+                // rt_kprintf("x:%d,y:%d\n", i, j);
+                lcd_black(i, j);
+            }
+        }
+    }
+}
+void my_round(int r)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        xy_round(roundxy[i][0], roundxy[i][1], roundxy[i][0] + r * xymove[i][0], roundxy[i][1] + r * xymove[i][1], r,i);
+    }
+}
+void xy_sink()
+{
+    for (int i = 0; i < 240; i++)
+    {
+        for (int j = 0; j <= 240; j++)
+        {
+            lcd_black(j, 240 - i);
+            rt_thread_mdelay(1);
+        }
+        // rt_kprintf("(%d,...) Blacked\n", i);
+    }
+}
 int main(void)
 {
-    // /* init Wi-Fi auto connect feature */
+    char str[] = "wifi join Dong abcd07691234";
+    my_round(20);
+
+    rt_wlan_config_autoreconnect(RT_TRUE);
+    rt_wlan_connect("Dong", "abcd07691234");
+    system(str);
+
+    /* init Wi-Fi auto connect feature */
     // wlan_autoconnect_init();
-    // /* enable auto reconnect on WLAN device */
-    // rt_wlan_config_autoreconnect(RT_TRUE);
-    // rt_wlan_connect("ssid", "password");
+    /* enable auto reconnect on WLAN device */
+
     // lcd_clear(WHITE);
 
     // /* show RT-Thread logo */

@@ -44,6 +44,7 @@ float Humi, Temp;
 rt_uint16_t ps_data;
 float brightness;
 int lcd_y;
+int int_tmp;
 
 void ath_init(void);
 void mqt_init(void);
@@ -113,30 +114,40 @@ static int example_subscribe(void *handle)
 }
 int plus_lcd_y(int pls)
 {
+    int_tmp = lcd_y;
     lcd_y+=pls;
-    return lcd_y;
+    return int_tmp;
+}
+void easy_show_lcd(char *title, float Temp)
+{
+    lcd_show_string(10, plus_lcd_y(24), 24, title);
+    sprintf(tmp, "%f", Temp);
+    lcd_show_string(10, plus_lcd_y(32), 32, tmp);
 }
 void show_lcd()
 {
-    lcd_y = 0;
-    lcd_show_string(10, plus_lcd_y(10), 24, "Temperature:");
-    sprintf(tmp, "%f", Temp);
-    lcd_show_string(10, plus_lcd_y(24), 32, tmp);
+    lcd_y = 10;
+    easy_show_lcd("Temperature:", Temp);
+    easy_show_lcd("Humidity:", Humi);
+    easy_show_lcd("Brightness:(lux)", brightness);
+    easy_show_lcd("Ps data:", (float)ps_data);
+    // lcd_show_string(10, plus_lcd_y(10), 24, "Temperature:");
+    // sprintf(tmp, "%f", Temp);
+    // lcd_show_string(10, plus_lcd_y(24), 32, tmp);
 
-    lcd_show_string(10, plus_lcd_y(32), 24, "Humidity:");
-    sprintf(tmp, "%f", Humi);
-    lcd_show_string(10, plus_lcd_y(24), 32, tmp);
+    // lcd_show_string(10, plus_lcd_y(32), 24, "Humidity:");
+    // sprintf(tmp, "%f", Humi);
+    // lcd_show_string(10, plus_lcd_y(24), 32, tmp);
 
-    lcd_show_string(10, plus_lcd_y(32), 24, "Brightness:");
-    sprintf(tmp, "%f(lux)", brightness);
-    lcd_show_string(10, plus_lcd_y(24), 32, tmp);
+    // lcd_show_string(10, plus_lcd_y(32), 24, "Brightness:");
+    // sprintf(tmp, "%f(lux)", brightness);
+    // lcd_show_string(10, plus_lcd_y(24), 32, tmp);
 }
 
 void make_file()
 {
     //文件描述符
     int fd;
-
     //用只写方式打开文件,如果没有该文件,则创建一个文件
     fd = open("/fal/test/Data.txt", O_WRONLY | O_CREAT | O_APPEND); //和原来相比，只是把O_TRUNC参数更改为O_APPEND，即更改为打开后，如果再进行写入，将从文件的末尾位置开始写。
     // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,String);
@@ -145,18 +156,14 @@ void make_file()
     {
         //写入文件
         write(fd, tmp, sizeof(tmp));
-
         // rt_kprintf("Write done.\n");
-
         //关闭文件
         close(fd);
     }
     else
     {
         rt_kprintf("File Open Fail.\n");
-    }
-
-    
+    }    
     return;
 }
 int cnt = 0;
@@ -167,12 +174,13 @@ void tmp_payload(void)
         Temp = aht10_read_temperature(Dev);
         brightness = ap3216c_read_ambient_light(dev);
         ps_data = ap3216c_read_ps_data(dev);
-        memset(tmp, 0, sizeof(tmp));
-        sprintf(tmp, "Temp: %.1f;Humi: %.1f;Count: %d\n", Temp, Humi,++cnt);
+        // icm20608_get_accel(icm20608_device_t dev, rt_int16_t *accel_x, rt_int16_t *accel_y, rt_int16_t *accel_z)
+        // memset(tmp, 0, sizeof(tmp));
+        // sprintf(tmp, "Temp: %.1f;Humi: %.1f;Count: %d\n", Temp, Humi,++cnt);
         // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
-        make_file();
+        // make_file();
         show_lcd();
-        sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f}}", Temp, Humi);
+        sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f,,\"LightLux\":%.2f,\"Psdata\":%d}}", Temp, Humi,brightness,ps_data);
         return;
 }
 void test_lcd()
@@ -300,12 +308,20 @@ void mqt_init(void)
 }
 int ap3_init(void){
     const char* i2c_bus_name = "i2c2";
-    rt_thread_t tid;
 
     dev = ap3216c_init(i2c_bus_name);
 
     return 0;
 }
+// void i20_init(void)
+// {
+//     const char* i2c_bus_name = "i2c2";
+
+//     icm20608_init(i2c_bus_name)
+
+//     return 0;
+
+// }
 void my_project(void)
 {
     ath_init();

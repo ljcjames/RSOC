@@ -331,6 +331,16 @@
 
 /* end of CYW43439 WiFi */
 /* end of Wi-Fi */
+#define PKG_USING_NETUTILS
+#define PKG_NETUTILS_NTP
+#define NTP_USING_AUTO_SYNC
+#define NTP_AUTO_SYNC_FIRST_DELAY 30
+#define NTP_AUTO_SYNC_PERIOD 3600
+#define NETUTILS_NTP_HOSTNAME "cn.ntp.org.cn"
+#define NETUTILS_NTP_HOSTNAME2 "ntp.rt-thread.org"
+#define NETUTILS_NTP_HOSTNAME3 "edu.ntp.org.cn"
+#define PKG_USING_NETUTILS_LATEST_VERSION
+#define PKG_NETUTILS_VER_NUM 0x99999
 
 /* IoT Cloud */
 
