@@ -12,13 +12,13 @@
 #include <rtdevice.h>
 #include <board.h>
 #include "drv_common.h"
-
+#include <ntp.h>
 #define DBG_TAG "main"
 #define DBG_LVL DBG_LOG
 #include <rtdbg.h>
 
 #include <drv_lcd.h>
-#include <rttlogo.h>
+
 
 /* 配置 LED 灯引脚 */
 #define PIN_LED_B GET_PIN(F, 11) // PF11 :  LED_B        --> LED
@@ -26,9 +26,9 @@
 #define LCD_MAX 240
 
 int roundxy[4][2] = {
-    {0, 0},
+    {0, 16},
     {0, LCD_MAX},
-    {LCD_MAX, 0},
+    {LCD_MAX, 16},
     {LCD_MAX, LCD_MAX},
 };
 int xymove[4][2] = {
@@ -40,21 +40,33 @@ int xymove[4][2] = {
 
 extern void wlan_autoconnect_init(void);
 
+void mytime()
+{
+    rt_thread_mdelay(10000);
+    time_t cur_time;
+
+    cur_time = ntp_get_time(RT_NULL);
+    if( cur_time)
+    {
+         rt_kprintf("NTP Server Time: %s", ctime((const time_t *)&cur_time));
+    }    
+    lcd_show_string(2, 2, 16, ctime((const time_t *)&cur_time)); 
+}
 void lcd_black(int x, int y)
 {
     lcd_address_set(x, y, x, y);
     lcd_write_half_word(BLACK);
 }
-void xy_round(int x, int y, int x2, int y2, int r,int ii)
+void xy_round(int x, int y, int x2, int y2, int r, int ii)
 {
-    rt_kprintf("x:%d,y:%d,x2:%d,y2:%d,r:%d\n", x, y, x2, y2, r);
-    for (int i = x; i != x2; i+=xymove[ii][0])
+    // rt_kprintf("x:%d,y:%d,x2:%d,y2:%d,r:%d\n", x, y, x2, y2, r);
+    for (int i = x; i != x2; i += xymove[ii][0])
     {
-        for (int j = y; j != y2; j+=xymove[ii][1])
+        for (int j = y; j != y2; j += xymove[ii][1])
         {
             int newi = x2 - i;
             int newj = y2 - j;
-            rt_kprintf("(%d,%d,%d)",(newi * newi + newj * newj), newi, newj);
+            // rt_kprintf("(%d,%d,%d)",(newi * newi + newj * newj), newi, newj);
             if ((newi * newi + newj * newj) > (r * r))
             {
                 // rt_kprintf("x:%d,y:%d\n", i, j);
@@ -65,9 +77,12 @@ void xy_round(int x, int y, int x2, int y2, int r,int ii)
 }
 void my_round(int r)
 {
+    lcd_fill(0, 0, roundxy[2][0], roundxy[2][1],BLACK);
+    lcd_write_half_word(BLACK);
+
     for (int i = 0; i < 4; i++)
     {
-        xy_round(roundxy[i][0], roundxy[i][1], roundxy[i][0] + r * xymove[i][0], roundxy[i][1] + r * xymove[i][1], r,i);
+        xy_round(roundxy[i][0], roundxy[i][1], roundxy[i][0] + r * xymove[i][0], roundxy[i][1] + r * xymove[i][1], r, i);
     }
 }
 void xy_sink()
@@ -82,14 +97,19 @@ void xy_sink()
         // rt_kprintf("(%d,...) Blacked\n", i);
     }
 }
+// void mylvgl()
+// {
+//     lv_init();
+//     lv_demo_music();
+// }
 int main(void)
 {
     char str[] = "wifi join Dong abcd07691234";
     my_round(20);
-
     rt_wlan_config_autoreconnect(RT_TRUE);
     rt_wlan_connect("Dong", "abcd07691234");
     system(str);
+    mytime();
 
     /* init Wi-Fi auto connect feature */
     // wlan_autoconnect_init();

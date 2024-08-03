@@ -578,6 +578,12 @@
 /* Onboard Peripheral Drivers */
 
 #define BSP_USING_USB_TO_USART
+#define BSP_USING_RS485
+
+/* set rts pin number  */
+
+#define BSP_RS485_RTS_PIN 104
+#define RS485_UART_DEVICE_NAME "uart6"
 #define BSP_USING_SRAM
 #define BSP_USING_ONBOARD_LCD
 #define BSP_USING_ONBOARD_LCD_PWM_BL
@@ -597,7 +603,10 @@
 #define BSP_USING_GPIO
 #define BSP_USING_UART
 #define BSP_USING_UART1
+#define BSP_USING_UART6
 #define BSP_USING_PWM
+#define BSP_USING_PWM3
+#define BSP_USING_PWM3_CH2
 #define BSP_USING_PWM14
 #define BSP_USING_PWM14_CH1
 #define BSP_USING_ON_CHIP_FLASH
