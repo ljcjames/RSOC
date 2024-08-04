@@ -44,20 +44,23 @@ void snake_entry(void *parameter)
     int new_direction = 0;
     while (1)
     {
-
         new_direction = rand() % 3;
         now_direction = (now_direction+3+new_direction)%4;//防止反向,走回头路
-        snake_address(snake_list[snake_head][0], snake_list[snake_head][1], SNAKE_SIZE, BLACK);
-        snake_address(snake_list[snake_tail][0], snake_list[snake_tail][1], SNAKE_SIZE, WHITE);
+
         former_head = snake_head;
         snake_head = (snake_head + 1) % (SNAKE_MAX);
-        snake_tail = (snake_tail + 1) % (SNAKE_MAX);
+        
         snake_list[snake_head][0] = (snake_list[former_head][0] + snake_direction[now_direction][0]+SNAKE_MAX) % (SNAKE_MAX);
         snake_list[snake_head][1] = (snake_list[former_head][1] + snake_direction[now_direction][1]+SNAKE_MAX) % (SNAKE_MAX);
+
         sprintf(tmp,"(%d,%d)", snake_list[snake_head][0], snake_list[snake_head][1]);
-        rt_kprintf("head:%d,%d\n", snake_list[snake_head][0], snake_list[snake_head][1]);
+        rt_kprintf("head:%d,%d\n", snake_list[snake_head][0], snake_list[snake_head][1]);        
         lcd_show_string(20, 20, 16,snake_dirshow[now_direction]);
         lcd_show_string(20+16*4, 20, 16,tmp);
         rt_thread_mdelay(1000);
+
+        snake_address(snake_list[snake_head][0], snake_list[snake_head][1], SNAKE_SIZE, BLACK);
+        snake_address(snake_list[snake_tail][0], snake_list[snake_tail][1], SNAKE_SIZE, WHITE);
+        snake_tail = (snake_tail + 1) % (SNAKE_MAX);
     }
 }
