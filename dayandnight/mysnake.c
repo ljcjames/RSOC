@@ -4,10 +4,12 @@
 #include "my_func.h"
 #include "mysnake.h"
 #include <time.h>
+#include <rtatomic.h>
 
 #define LCD_MAX 240
 #define SNAKE_SIZE 20
 #define SNAKE_MAX LCD_MAX / SNAKE_SIZE
+rt_atomic_t now_direction=3 ;   
 
 // bool snake_table[SNAKE_MAX][SNAKE_MAX] = {0};
 // struct My_snake
@@ -20,6 +22,7 @@
 
 void snake_entry(void *parameter)
 {
+    system("irq");
     time_t t;
     /* 初始化随机数发生器 */
     srand((unsigned)time(&t));
@@ -28,7 +31,7 @@ void snake_entry(void *parameter)
     char snake_dirshow[4][7] = {"upup", "left", "down", "rigt"};
     char tmp[10];
     int snake_head = 2, snake_tail = 0, former_head; // 蛇头，蛇尾
-    int now_direction = 3;                           // 当前方向
+
     snake_list[1][0] = SNAKE_MAX / 2;
     snake_list[1][1] = SNAKE_MAX / 2;
     snake_list[0][0] = snake_list[1][0] - 1;
@@ -44,8 +47,8 @@ void snake_entry(void *parameter)
     int new_direction = 0;
     while (1)
     {
-        new_direction = rand() % 3;
-        now_direction = (now_direction+3+new_direction)%4;//防止反向,走回头路
+        // new_direction = rand() % 3;
+        // now_direction = (now_direction+3+new_direction)%4;//防止反向,走回头路
 
         former_head = snake_head;
         snake_head = (snake_head + 1) % (SNAKE_MAX);
@@ -57,7 +60,7 @@ void snake_entry(void *parameter)
         // rt_kprintf("head:%d,%d\n", snake_list[snake_head][0], snake_list[snake_head][1]);        
         lcd_show_string(20, 20, 16,snake_dirshow[now_direction]);
         lcd_show_string(20+16*4, 20, 16,tmp);
-        rt_thread_mdelay(1000);
+        rt_thread_mdelay(500);
 
         snake_address(snake_list[snake_head][0], snake_list[snake_head][1], SNAKE_SIZE, BLACK);
         snake_address(snake_list[snake_tail][0], snake_list[snake_tail][1], SNAKE_SIZE, WHITE);
