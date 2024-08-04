@@ -3,4 +3,4 @@
 #include <stdbool.h>
 #include "my_func.h"
 
-void snake_entry(void);
+void snake_entry(void *parameter);

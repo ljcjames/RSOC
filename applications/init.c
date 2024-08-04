@@ -4,6 +4,7 @@
 #include <wlan_cfg.h>
 #include <wlan_prot.h>
 #include <ap3216c.h>
+#include "my_func.h"
 
 static int board_init(void)
 {
@@ -48,7 +49,12 @@ INIT_APP_EXPORT(app_init);
     // extern int wifi_join(int argc, char *argv[]);
 int main_init(void)
 {
-
+    
+    char str[] = "wifi join Dong abcd07691234";
+    my_round(20);
+    rt_wlan_config_autoreconnect(RT_TRUE);
+    rt_wlan_connect("Dong", "abcd07691234");
+    system(str);
     // rt_thread_mdelay(18000);
     // char *argv[] = {"wifi", "join", "Dong", "abcd07691234"};
     // wifi_join(4, argv);
