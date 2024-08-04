@@ -164,12 +164,12 @@ SECTIONS
         /*  *packages*syswatch*.o(.bss .bss*)   */
         /*  *packages*UrlEncode*.o(.bss .bss*) */
 
-        build\\kernel\\src\\*.o(.bss .bss*)
+        /*build\\kernel\\src\\*.o(.bss .bss*)*/
         /* build\\kernel\\libcpu\\*.o(.bss .bss*) */
         /* build\\kernel\\components\\libc\\*.o(.bss .bss*)
         /* build\\kernel\\components\\drivers\\*.o(.bss .bss*) */
         /* build\\kernel\\components\\dfs\\*.o(.bss .bss*) */
-        build\\kernel\\components\\net\\lwip\\lwip-2.0.3\\*.o(.bss .bss*)
+        /*build\\kernel\\components\\net\\lwip\\lwip-2.0.3\\*.o(.bss .bss*)*/
         /* build\\kernel\\components\\net\\lwip\\port\\**.o(.bss .bss*) */
         /* build\\kernel\\components\\net\\sal\\*.o(.bss .bss*) */
         /* build\\kernel\\components\\net\\netdev\\*.o(.bss .bss*) */
