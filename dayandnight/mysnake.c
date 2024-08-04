@@ -26,7 +26,7 @@ void snake_entry(void *parameter)
     time_t t;
     /* 初始化随机数发生器 */
     srand((unsigned)time(&t));
-    int snake_list[SNAKE_MAX + 1][2] = {0};
+    int snake_list[SNAKE_MAX+1][2] = {0};
     int snake_direction[4][2] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}}; // 上，左，下，右
     int snake_food[2];
     bool food_flag = false;
@@ -62,7 +62,7 @@ void snake_entry(void *parameter)
         snake_list[snake_head][0] = (snake_list[former_head][0] + snake_direction[now_direction][0] + SNAKE_MAX) % (SNAKE_MAX);
         snake_list[snake_head][1] = (snake_list[former_head][1] + snake_direction[now_direction][1] + SNAKE_MAX) % (SNAKE_MAX);
 
-        sprintf(tmp, "(%d,%d)", snake_list[snake_head][0], snake_list[snake_head][1] && snake_len < SNAKE_MAX - 1);
+        sprintf(tmp, "(%d,%d)", snake_list[snake_head][0], snake_list[snake_head][1]);
         // rt_kprintf("head:%d,%d\n", snake_list[snake_head][0], snake_list[snake_head][1]);
         lcd_show_string(20, 20, 16, snake_dirshow[now_direction]);
         lcd_show_string(20 + 16 * 4, 20, 16, tmp);
@@ -75,6 +75,13 @@ void snake_entry(void *parameter)
             snake_food[1] = rand() % SNAKE_MAX;
             snake_address(snake_food[0], snake_food[1], SNAKE_SIZE, GREEN);
             snake_len++;
+            sprintf(tmp, "%d", snake_len);
+            lcd_show_string(100, 105, 32, tmp);
+            if (snake_len >= SNAKE_MAX-2)
+            {
+                snake_address(snake_list[snake_tail][0], snake_list[snake_tail][1], SNAKE_SIZE, WHITE);
+                snake_tail = (snake_tail + 1) % (SNAKE_MAX);
+            }
         }
         else
         {
