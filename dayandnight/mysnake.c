@@ -54,7 +54,7 @@ void snake_entry(void *parameter)
         snake_list[snake_head][1] = (snake_list[former_head][1] + snake_direction[now_direction][1]+SNAKE_MAX) % (SNAKE_MAX);
 
         sprintf(tmp,"(%d,%d)", snake_list[snake_head][0], snake_list[snake_head][1]);
-        rt_kprintf("head:%d,%d\n", snake_list[snake_head][0], snake_list[snake_head][1]);        
+        // rt_kprintf("head:%d,%d\n", snake_list[snake_head][0], snake_list[snake_head][1]);        
         lcd_show_string(20, 20, 16,snake_dirshow[now_direction]);
         lcd_show_string(20+16*4, 20, 16,tmp);
         rt_thread_mdelay(1000);
