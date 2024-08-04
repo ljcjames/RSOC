@@ -7,13 +7,12 @@
 /* Program Entry, set to mark it as "used" and avoid gc */
 MEMORY
 {
-    CODE (rx) : ORIGIN = 0x08000000, LENGTH = 1024k /* 1024KB flash */
-    RAM1 (rw) : ORIGIN = 0x20000000, LENGTH =  128k /* 128K sram */
-    RAM2 (rw) : ORIGIN = 0x10000000, LENGTH =   64k /* 64K sram */
-    MCUlcdgrambysram (rw) : ORIGIN = 0x68000000, LENGTH = 1024k
+    FLASH (rx) : ORIGIN = 0x08020000, LENGTH =  1024k - 128k /* 1024KB  - 128kB flash */
+    RAM (rw) : ORIGIN = 0x20000000, LENGTH =  128k /* 128K sram */
+    CCMRAM (rw) : ORIGIN = 0x10000000, LENGTH =   64k /* 64K ccm sram */
 }
 ENTRY(Reset_Handler)
-_system_stack_size = 0x400;
+_system_stack_size = 0x200;
 
 SECTIONS
 {
@@ -43,12 +42,6 @@ SECTIONS
         KEEP(*(VSymTab))
         __vsymtab_end = .;
 
-        /* section information for utest */
-        . = ALIGN(4);
-        __rt_utest_tc_tab_start = .;
-        KEEP(*(UtestTcTab))
-        __rt_utest_tc_tab_end = .;
-
         /* section information for initial. */
         . = ALIGN(4);
         __rt_init_start = .;
@@ -62,12 +55,16 @@ SECTIONS
         KEEP (*(.init_array))
         PROVIDE(__ctors_end__ = .);
 
+        /* section information for utest */
+        . = ALIGN(4);
+        __rt_utest_tc_tab_start = .;
+        KEEP(*(UtestTcTab))
+        __rt_utest_tc_tab_end = .;
+
         . = ALIGN(4);
 
-        KEEP(*(.eh_frame*))
-        . = ALIGN(4);
         _etext = .;
-    } > CODE = 0
+    } > FLASH = 0
 
     /* .ARM.exidx is sorted, so has to go in its own output section.  */
     __exidx_start = .;
@@ -77,12 +74,13 @@ SECTIONS
 
         /* This is used by the startup in order to initialize the .data secion */
         _sidata = .;
-    } > CODE
+    } > FLASH
     __exidx_end = .;
 
+    /* used by the startup to initialize data */
+    _sidata = LOADADDR(.data);
     /* .data section which is used for initialized data */
-
-    .data : AT (_sidata)
+    .data :
     {
         . = ALIGN(4);
         /* This is used by the startup in order to initialize the .data secion */
@@ -100,7 +98,86 @@ SECTIONS
         . = ALIGN(4);
         /* This is used by the startup in order to initialize the .data secion */
         _edata = . ;
-    } >RAM1
+    } >RAM  AT> FLASH
+
+    _siccmdata = LOADADDR(.ccmdata); /* May be already present */
+
+    /* Initialized CCM-RAM section 
+    * 
+    * IMPORTANT NOTE! 
+    * If initialized variables will be placed in this section, 
+    * the startup code needs to be modified to copy the init-values.  
+    */
+    .ccmdata : 
+    {
+        . = ALIGN(4);
+        _sccmdata = .;        /* create a global symbol at data start */
+        *(.ccmdata)           /* .data sections */
+        *(.ccmdata*)          /* .data* sections */
+/*
+        *data_reg.o(.data .data*)
+        *monitor*.o(.data .data*)
+        *sender*.o(.data .data*)
+        *kernel*.o(.data .data*)
+*/
+        . = ALIGN(4);
+        _eccmdata = .;        /* define a global symbol at data end */
+    } >CCMRAM AT> FLASH
+
+
+    /* _siccm_bss = LOADADDR(.ccm_bss); */
+    /* CCM-RAM section
+    *
+    * IMPORTANT NOTE!
+    * If initialized variables will be placed in this section,
+    * the startup code needs to be modified to copy the init-values.
+    */
+    .ccm_bss :
+    {
+        . = ALIGN(4);
+        _sccm_bss = .;       /* create a global symbol at ccmram start */
+        *(.ccm_bss)
+        *(.ccm_bss*)
+
+        /* build\\core\\*.o(.bss .bss*) */
+        build\\monitor\\**.o(.bss .bss*)
+        build\\sender\\**.o(.bss .bss*)
+        /* build\\mapping\\**.o(.bss .bss*) */
+
+        /* *board*.o(.bss .bss*) */
+        /* *autosave.o(.bss .bss*)*/
+        /* *application*autosave.o(.bss .bss*) */
+        /* *data_send.o(.bss .bss*)  */
+        /* *isee_http.o(.bss .bss*)  */
+        /* *config.o(.bss .bss*) */
+        /* *dio.o(.bss .bss*) */
+        /* *eth.o(.bss .bss*) */
+        /* *led.o(.bss .bss*) */
+ 
+        /* *packages*agile_telnet*.o(.bss .bss*)  */
+        /* *packages*agile_console*.o(.bss .bss*)  */
+        /* *packages*cJSON*.o(.bss .bss*)   */
+        /*  *packages*CmBacktrace*.o(.bss .bss*)*/
+        /*   *packages*easyblink*.o(.bss .bss*) */
+        /*  *packages*webclient*.o(.bss .bss*) */
+        /*  *packages*netutils*.o(.bss .bss*)  */
+        /*  *packages*syswatch*.o(.bss .bss*)   */
+        /*  *packages*UrlEncode*.o(.bss .bss*) */
+
+        build\\kernel\\src\\*.o(.bss .bss*)
+        /* build\\kernel\\libcpu\\*.o(.bss .bss*) */
+        /* build\\kernel\\components\\libc\\*.o(.bss .bss*)
+        /* build\\kernel\\components\\drivers\\*.o(.bss .bss*) */
+        /* build\\kernel\\components\\dfs\\*.o(.bss .bss*) */
+        build\\kernel\\components\\net\\lwip\\lwip-2.0.3\\*.o(.bss .bss*)
+        /* build\\kernel\\components\\net\\lwip\\port\\**.o(.bss .bss*) */
+        /* build\\kernel\\components\\net\\sal\\*.o(.bss .bss*) */
+        /* build\\kernel\\components\\net\\netdev\\*.o(.bss .bss*) */
+        /* build\\kernel\\components\\net\\sal_socket\\*.o(.bss .bss*) */
+
+        . = ALIGN(4);
+        _eccm_bss = .;       /* create a global symbol at ccmram end */
+    } >CCMRAM
 
     .stack :
     {
@@ -109,7 +186,7 @@ SECTIONS
         . = . + _system_stack_size;
         . = ALIGN(4);
         _estack = .;
-    } >RAM1
+    } >RAM
 
     __bss_start = .;
     .bss :
@@ -127,17 +204,8 @@ SECTIONS
         _ebss = . ;
 
         *(.bss.init)
-    } > RAM1
+    } > RAM
     __bss_end = .;
-
-    .MCUlcdgrambysram (NOLOAD) : ALIGN(4)
-    {
-        . = ALIGN(4);
-        *(.MCUlcdgrambysram)
-        *(.MCUlcdgrambysram.*)
-        . = ALIGN(4);
-        __MCUlcdgrambysram_free__ = .;
-    } > MCUlcdgrambysram
 
     _end = .;
 

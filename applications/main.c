@@ -19,6 +19,7 @@
 
 #include <drv_lcd.h>
 #include "my_func.h"
+#include <drv_gpio.h>
 
 
 /* 配置 LED 灯引脚 */
@@ -102,7 +103,9 @@ void xy_sink()
 // }
 int main(void)
 {
-    // system("snake game");
+    rt_pin_mode(PIN_LED_B, PIN_MODE_OUTPUT);
+    rt_pin_write(PIN_LED_B, PIN_HIGH);
+    system("snake game");
     char str[] = "wifi join Dong abcd07691234";
     my_round(20);
     rt_wlan_config_autoreconnect(RT_TRUE);
