@@ -9,6 +9,7 @@
 #include <ap3216c.h>
 #include <dfs_posix.h>
 #include <drv_lcd.h>
+#include "mysnake.h"
 
 
 char DEMO_PRODUCT_KEY[IOTX_PRODUCT_KEY_LEN + 1] = {0};
@@ -282,6 +283,7 @@ static void mqtt_example_main(void *parameter)
 #define THREAD_TIMESLICE 5
 
 rt_thread_t MQTT_Thread = RT_NULL;
+rt_thread_t Snake_Thread = RT_NULL;
 
 void ath_init(void)
 {
@@ -313,6 +315,20 @@ int ap3_init(void){
 
     return 0;
 }
+void snk_init(void)
+{
+    Snake_Thread = rt_thread_create("Snake_Thread", snake_entry, RT_NULL, THREAD_STACK_SIZE, THREAD_PRIORITY, THREAD_TIMESLICE);
+
+    if (Snake_Thread != RT_NULL)
+    {
+        rt_thread_startup(Snake_Thread);
+    }
+    else
+    {
+        rt_kprintf("Snake Thread Create Failed!\n");
+    }
+}
+MSH_CMD_EXPORT_ALIAS(snk_init, snake, "snake game");
 // void i20_init(void)
 // {
 //     const char* i2c_bus_name = "i2c2";

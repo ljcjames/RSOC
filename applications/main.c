@@ -18,6 +18,7 @@
 #include <rtdbg.h>
 
 #include <drv_lcd.h>
+#include "my_func.h"
 
 
 /* 配置 LED 灯引脚 */
@@ -26,9 +27,9 @@
 #define LCD_MAX 240
 
 int roundxy[4][2] = {
-    {0, 16},
+    {0, 0},
     {0, LCD_MAX},
-    {LCD_MAX, 16},
+    {LCD_MAX, 0},
     {LCD_MAX, LCD_MAX},
 };
 int xymove[4][2] = {
@@ -52,11 +53,7 @@ void mytime()
     }    
     lcd_show_string(2, 2, 16, ctime((const time_t *)&cur_time)); 
 }
-void lcd_black(int x, int y)
-{
-    lcd_address_set(x, y, x, y);
-    lcd_write_half_word(BLACK);
-}
+
 void xy_round(int x, int y, int x2, int y2, int r, int ii)
 {
     // rt_kprintf("x:%d,y:%d,x2:%d,y2:%d,r:%d\n", x, y, x2, y2, r);
@@ -77,6 +74,7 @@ void xy_round(int x, int y, int x2, int y2, int r, int ii)
 }
 void my_round(int r)
 {
+    // 这个范围涂黑
     lcd_fill(0, 0, roundxy[2][0], roundxy[2][1],BLACK);
     lcd_write_half_word(BLACK);
 
@@ -104,6 +102,7 @@ void xy_sink()
 // }
 int main(void)
 {
+    // system("snake game");
     char str[] = "wifi join Dong abcd07691234";
     my_round(20);
     rt_wlan_config_autoreconnect(RT_TRUE);
