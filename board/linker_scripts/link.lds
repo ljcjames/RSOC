@@ -7,12 +7,12 @@
 /* Program Entry, set to mark it as "used" and avoid gc */
 MEMORY
 {
-    FLASH (rx) : ORIGIN = 0x08020000, LENGTH =  1024k - 128k /* 1024KB  - 128kB flash */
+    FLASH (rx) : ORIGIN = 0x08000000, LENGTH =  1024k /* 1024KB  - 128kB flash */
     RAM (rw) : ORIGIN = 0x20000000, LENGTH =  128k /* 128K sram */
     CCMRAM (rw) : ORIGIN = 0x10000000, LENGTH =   64k /* 64K ccm sram */
 }
 ENTRY(Reset_Handler)
-_system_stack_size = 0x200;
+_system_stack_size = 0x400;
 
 SECTIONS
 {
