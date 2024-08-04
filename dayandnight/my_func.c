@@ -14,17 +14,22 @@ void lcd_white(int x, int y)
 {
     lcd_address_set(x, y, x, y);
     lcd_write_half_word(WHITE);
-
 }
-void snake_address(int x, int y,int r,const rt_uint16_t da)
+void snake_address(int x, int y, int r, const rt_uint16_t da)
 {
-    lcd_fill(x*r, y*r, x*r+r-1, y*r+r-1,da);
-    lcd_write_half_word(da);
+    for (int i = x * r; i < x * r + r; i++)
+    {
+        for (int j = y * r; j < y * r + r; j++)
+        {
+            lcd_address_set(i, j, i, j);
+            lcd_write_half_word(da);
+        }
+    }
 }
 // bt 命令行
 int color_cmd(int argc, char **argv)
 {
-    snake_address(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]),BLACK);
+    snake_address(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), BLACK);
     return 1;
 }
 MSH_CMD_EXPORT_ALIAS(color_cmd, snk, bt 命令行);

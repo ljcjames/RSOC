@@ -31,6 +31,10 @@ git remote remove origin
 git remote set-url --add origin git@github.com:*.git
 
 git push -u origin master
+
+# 退到/进到 指定commit的sha码
+
+git reset --hard dde8c25694f34acf8971f0782b1a676f39bf0a46
 ```
 ## SConscript
 加入这个文件可以使在当前文件夹里的也能被调用
