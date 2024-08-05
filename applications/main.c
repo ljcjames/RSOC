@@ -36,6 +36,8 @@ int main(void)
     rt_pin_mode(PIN_LED_B, PIN_MODE_OUTPUT);
     rt_pin_write(PIN_LED_B, PIN_LOW);
     system("snake game");
+    rt_wlan_config_autoreconnect(RT_TRUE);
+    rt_wlan_connect("Dong", "abcd07691234");
     mytime();
 
     /* init Wi-Fi auto connect feature */

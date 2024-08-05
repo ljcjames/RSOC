@@ -52,8 +52,6 @@ int main_init(void)
     
     char str[] = "wifi join Dong abcd07691234";
     my_round(20);
-    rt_wlan_config_autoreconnect(RT_TRUE);
-    rt_wlan_connect("Dong", "abcd07691234");
     system(str);
     // rt_thread_mdelay(18000);
     // char *argv[] = {"wifi", "join", "Dong", "abcd07691234"};
