@@ -75,6 +75,7 @@ void snake_entry(void *parameter)
             snake_len++;
             sprintf(tmp, "%d", snake_len);
             lcd_show_string(100, 105, 32, tmp);
+            // 防止蛇咬尾出现bug
             if (snake_len >= SNAKE_MAX)
             {
                 snake_address(snake_list[snake_tail][0], snake_list[snake_tail][1], SNAKE_SIZE, WHITE);
@@ -95,6 +96,6 @@ void snake_entry(void *parameter)
         snake_head = (snake_head + 1) % (SNAKE_MAX);
         snake_list[snake_head][0] = new_head_x;
         snake_list[snake_head][1] = new_head_y;
-        rt_thread_mdelay(900);
+        rt_thread_mdelay(300);
     }
 }
