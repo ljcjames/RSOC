@@ -12,8 +12,11 @@
 #define KEY_LEFT GET_PIN(C, 0)
 #define KEY_RIGHT GET_PIN(C, 4)
 extern rt_atomic_t now_direction ;
-void key_up_callback(void *args) 
+extern rt_atomic_t snake_pressed ;
+extern int snake_max;
+void key_up_callback(void *args)
 { 
+    rt_atomic_store(&snake_pressed, snake_max+1);
     if(rt_atomic_load(&now_direction) != 2) rt_atomic_store(&now_direction, 0);
     int value = rt_pin_read(KEY_UP);
     LOG_I("key up value: %d\n", value);
@@ -21,6 +24,7 @@ void key_up_callback(void *args)
 
 void key_down_callback(void *args) 
 { 
+    rt_atomic_store(&snake_pressed, snake_max+1);
     int value = rt_pin_read(KEY_DOWN);
     if(rt_atomic_load(&now_direction) != 0) rt_atomic_store(&now_direction, 2);
     LOG_I("key down value: %d\n", value);
@@ -28,6 +32,7 @@ void key_down_callback(void *args)
 
 void key_left_callback(void *args) 
 { 
+    rt_atomic_store(&snake_pressed, snake_max+1);
     if(rt_atomic_load(&now_direction) != 3) rt_atomic_store(&now_direction, 1);
     int value = rt_pin_read(KEY_LEFT);
     LOG_I("key left value: %d\n", value);
@@ -35,6 +40,7 @@ void key_left_callback(void *args)
 
 void key_right_callback(void *args) 
 { 
+    rt_atomic_store(&snake_pressed, snake_max+1);
     if(rt_atomic_load(&now_direction) != 1) rt_atomic_store(&now_direction, 3);
     int value = rt_pin_read(KEY_RIGHT);
     LOG_I("key right value: %d\n", value);
