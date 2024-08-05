@@ -28,6 +28,9 @@ int HAL_Snprintf(char *str, const int len, const char *fmt, ...);
 char buffer[1026] = {};
 char tmp[1026];
 extern int snake_len;
+rt_atomic_t page_chosen = 1;
+
+#define PAGE_MAX 2
 
 #define GPIO_LED_B GET_PIN(F, 11)
 #define GPIO_LED_R GET_PIN(F, 12)
@@ -178,12 +181,19 @@ void tmp_payload(void)
     Temp = aht10_read_temperature(Dev);
     brightness = ap3216c_read_ambient_light(dev);
     ps_data = ap3216c_read_ps_data(dev);
+    if (ps_data > 14)
+    {
+        page_chosen = (page_chosen % PAGE_MAX) + 1;
+    }
     // icm20608_get_accel(icm20608_device_t dev, rt_int16_t *accel_x, rt_int16_t *accel_y, rt_int16_t *accel_z)
     // memset(tmp, 0, sizeof(tmp));
     // sprintf(tmp, "Temp: %.1f;Humi: %.1f;Count: %d\n", Temp, Humi,++cnt);
     // rt_kprintf("\n%f %f tmp:%s\n",Humi,Temp,tmp);
     // make_file();
-    // show_lcd();
+    if (page_chosen == 2)
+    {
+        show_lcd();
+    }
     sprintf(tmp, "{\"params\":{\"temperature\":%.2f,\"humidity\":%.2f,\"LightLux\":%.2f,\"Psdata\":%d,\"Snakelen\":%d}}", Temp, Humi, brightness, ps_data, snake_len);
     return;
 }
