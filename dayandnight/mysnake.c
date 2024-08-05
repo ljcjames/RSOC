@@ -57,8 +57,8 @@ void snake_entry(void *parameter)
     {
         if (!snake_pressed)
         {
-            //80%的概率保持当前方向，20%的概率随机改变方向
-            if (rand() % 100 < 20)
+            //50%的概率保持当前方向，20%的概率随机改变方向
+            if (rand() % 100 < 50)
             {
                 new_direction = rand() % 3;
                 now_direction = (now_direction + 3 + new_direction) % 4; // 防止反向,走回头路
