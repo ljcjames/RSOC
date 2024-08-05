@@ -32,7 +32,7 @@ git remote set-url --add origin git@github.com:*.git
 
 git push -u origin master
 
-# 退到/进到 指定commit的sha码
+# 退到/进到 指定commit的sha码(没得再返回了)
 
 git reset --hard dde8c25694f34acf8971f0782b1a676f39bf0a46
 ```
